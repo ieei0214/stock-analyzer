@@ -550,7 +550,7 @@
       "Step 4: Verify 'AAPL' still appears in watchlist",
       "Step 5: Query database directly to verify record exists"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -575,7 +575,7 @@
       "Step 5: Query database directly",
       "Step 6: Verify record is removed from watchlist table"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -588,7 +588,7 @@
       "Step 5: Delete 1 stock",
       "Step 6: Verify count shows 2"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -599,7 +599,7 @@
       "Step 3: Compare with yfinance or other source",
       "Step 4: Verify price is recent/accurate (within reasonable margin)"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -610,7 +610,7 @@
       "Step 3: Compare chart data points with known historical prices",
       "Step 4: Verify data is not mock/static"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -622,7 +622,7 @@
       "Step 4: Verify values match (or are recent)",
       "Step 5: Repeat for EPS, revenue growth"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -634,7 +634,7 @@
       "Step 4: Manually calculate or verify against known source",
       "Step 5: Verify calculations are based on real data"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -657,7 +657,7 @@
       "Step 3: Compare with known analyst ratings from financial sites",
       "Step 4: Verify data is real, not mocked"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -692,7 +692,7 @@
       "Step 4: Run an analysis",
       "Step 5: Verify analysis_date timestamp is accurate"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -748,7 +748,7 @@
       "Step 3: Verify sector shows 'Technology' (or correct sector)",
       "Step 4: Verify not generic placeholder values"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -759,7 +759,7 @@
       "Step 3: Analyze a non-dividend stock like 'AMZN'",
       "Step 4: Verify appropriate N/A or 0% display"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -770,7 +770,7 @@
       "Step 3: Verify MACD line, signal line, and histogram are displayed",
       "Step 4: Compare with known MACD calculation"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -781,7 +781,7 @@
       "Step 3: Verify displayed data is different and specific to MSFT",
       "Step 4: Verify not showing same static data for all stocks"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -803,7 +803,7 @@
       "Step 3: Compare with known volume data from financial sites",
       "Step 4: Verify volume patterns match real trading activity"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -825,7 +825,7 @@
       "Step 3: Verify low/high/mean targets are realistic",
       "Step 4: Compare with known analyst targets"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1280,7 +1280,7 @@
       "Step 2: Verify 'Analysis not found' message",
       "Step 3: Verify navigation to other pages works"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
