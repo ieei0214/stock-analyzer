@@ -1147,7 +1147,7 @@
       "Step 5: Enter ticker with special characters",
       "Step 6: Verify validation error appears"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1237,7 +1237,7 @@
       "Step 3: Verify error message about duplicate",
       "Step 4: Verify original entry is unaffected"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1724,7 +1724,7 @@
       "Step 2: Verify JSON response (not HTML page)",
       "Step 3: Verify proper content-type header"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1734,7 +1734,7 @@
       "Step 2: Verify script doesn't execute",
       "Step 3: Verify input is sanitized/escaped"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
