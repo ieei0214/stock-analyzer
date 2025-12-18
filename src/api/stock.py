@@ -6,11 +6,13 @@ Provides endpoints for fetching and managing stock data.
 
 import logging
 from fastapi import APIRouter, HTTPException
+from fastapi.responses import JSONResponse
 from typing import Optional
 
 from ..database.dao import StockDAO, StockDataDAO, SettingsDAO
 from ..database.models import Stock, StockCreate, APIResponse
 from ..agents import DataCollectorAgent, validate_stock_ticker
+from ..charts.generator import chart_generator
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -260,3 +262,75 @@ async def validate_ticker(ticker: str):
             "valid": False,
             "message": str(e)
         }
+
+
+@router.get("/{ticker}/chart-images")
+async def get_chart_images(ticker: str, chart_type: Optional[str] = None):
+    """Get chart images as base64-encoded data URLs.
+
+    Args:
+        ticker: Stock ticker symbol
+        chart_type: Optional specific chart type (price, volume, rsi, macd)
+                   If not specified, returns all charts
+
+    Returns:
+        Dictionary of chart names to base64 data URLs
+    """
+    ticker = ticker.strip().upper()
+
+    try:
+        collector = DataCollectorAgent(ticker)
+        if not collector.validate_ticker():
+            raise HTTPException(status_code=404, detail=f"Invalid ticker: {ticker}")
+
+        # Get data for charts
+        history = collector.get_price_history()
+        technicals = collector.calculate_technical_indicators()
+
+        # Prepare price data format for chart generator
+        price_data = {
+            "dates": history.get("dates", []),
+            "open": history.get("open", []),
+            "close": history.get("close", []),
+            "volume": history.get("volume", []),
+        }
+
+        if chart_type:
+            # Generate specific chart
+            chart_type = chart_type.lower()
+            if chart_type == "price":
+                chart = chart_generator.generate_price_chart(
+                    price_data, technicals, ticker)
+            elif chart_type == "volume":
+                chart = chart_generator.generate_volume_chart(
+                    price_data, ticker)
+            elif chart_type == "rsi":
+                chart = chart_generator.generate_rsi_chart(
+                    technicals, history.get("dates"), ticker)
+            elif chart_type == "macd":
+                chart = chart_generator.generate_macd_chart(
+                    technicals, history.get("dates"), ticker)
+            else:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Unknown chart type: {chart_type}. Valid types: price, volume, rsi, macd"
+                )
+            return {"ticker": ticker, "chart_type": chart_type, "image": chart}
+
+        # Generate all charts
+        charts = chart_generator.generate_all_charts(
+            ticker, price_data, technicals)
+
+        return {
+            "ticker": ticker,
+            "charts": charts
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error generating chart images for {ticker}: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to generate chart images: {str(e)}"
+        )
