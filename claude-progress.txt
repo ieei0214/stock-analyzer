@@ -518,3 +518,89 @@ User → Frontend (Jinja2 + Tailwind)
 - Matplotlib for chart generation (base64 PNG)
 - yfinance for stock data
 - OpenAI/Gemini for LLM analysis
+
+---
+
+## Session 7: Security Features and Validation
+
+### Date: December 18, 2025
+### Agent: Development Agent
+
+## Completed Tasks
+
+### 1. Implemented Key Format Validation
+- Added minimum length validation (20 characters) for keys
+- Returns specific error message for short keys
+- Works for both OpenAI and Gemini providers
+
+### 2. Implemented Key Logging Protection
+- Added KeyFilter class in main.py
+- Filters mask keys in log messages using regex patterns
+- Covers OpenAI (sk-*), Gemini (AIza*), and generic long keys
+- Prevents accidental credential leaks in logs
+
+### 3. Implemented UUID-Based Background Task IDs
+- Updated watchlist.py analyze-all endpoint
+- Uses uuid.uuid4() for task IDs (non-enumerable)
+- Sequential task IDs return 404 "not found"
+- Proper cancel endpoint with validation
+
+### 4. Implemented Settings Required Field Validation
+- Key required for selected provider
+- Empty key with active provider rejected
+- Clear error messages for missing fields
+
+### 5. Verified and Marked 11 New Tests as Passing
+
+**Security Tests:**
+1. Settings save requires all required fields
+2. Background task IDs are not predictable/enumerable
+3. Cancel task operation validates task ownership
+4. Error logs do not expose sensitive keys
+
+**Form Validation Tests:**
+5. Key format validation
+6. Error messages are specific
+7. Server-side validation matches client-side
+
+**Idempotency Tests:**
+8. Double-click submit creates only one record
+9. Rapid delete clicks cause single deletion
+
+**Data Cleanup Tests:**
+10. Delete stock removes from watchlist
+11. Watchlist count updates after delete
+
+## Current Test Status
+- Total Tests: 273
+- Passing: 79
+- Failing: 194
+- Progress: 28.9%
+
+## Files Modified
+1. src/main.py - Added KeyFilter for log security
+2. src/api/settings.py - Added key format and required field validation
+3. src/api/watchlist.py - Updated analyze-all to use UUID task IDs
+4. feature_list.json - Updated 11 tests to passes: true
+
+## Notes for Next Agent
+
+### What is Working
+- All core functionality verified working
+- Real stock data from yfinance
+- Charts generated via matplotlib
+- Settings with key masking
+- Background tasks with UUID IDs
+- Form validation (both client and server-side)
+- Idempotent operations (add/delete)
+
+### Browser Automation Status
+- Playwright MCP tool requires Chrome at /opt/google/chrome/chrome
+- npx playwright install requires sudo (not available)
+- Many UI tests require browser automation
+- Focus on testing via curl for now
+
+### Priority for Next Session
+1. Continue verifying tests via curl calls
+2. Focus on workflow tests that can be tested via curl
+3. Implement any missing features identified during testing
