@@ -84,7 +84,7 @@
 
 ---
 
-## Session 2: Agent Implementation (Current Session)
+## Session 2: Agent Implementation (Previous Session)
 
 ### Date: December 18, 2025
 ### Agent: Development Agent
@@ -116,55 +116,73 @@
   - Buy/Sell/Hold recommendation with confidence levels
   - Detailed reasoning in bullet points
 
-### 3. Updated API Integration (COMPLETED)
-- **src/api/analysis.py**:
-  - Full integration with Data Collector and Investment Analyst agents
-  - Placeholder API key detection (prevents using fake keys like "your-api-key-here")
-  - Proper error handling for invalid tickers
-  - Analysis results stored in database
-- **src/api/stock.py**:
-  - Live stock data fetching via yfinance
-  - Price, fundamentals, technicals, news, analyst endpoints
-  - Data refresh capability
-  - Chart data endpoint
-- **src/api/watchlist.py**:
-  - Real-time price enrichment for watchlist items
-  - Ticker validation before adding to watchlist
+---
 
-### 4. Updated Agent Package
-- **src/agents/__init__.py**: Exports for DataCollectorAgent, InvestmentAnalystAgent
+## Session 3: Security Features & Testing (Current Session)
+
+### Date: December 18, 2025
+### Agent: Development Agent
+
+## Completed Tasks
+
+### 1. Implemented API Key Masking (SECURITY)
+- Settings API now returns masked API keys (e.g., "sk-f...z789")
+- Full API key never exposed in API responses or page source
+- API keys stored ONLY in .env file, NOT in database
+- Verified by testing:
+  - Saved API key to settings
+  - Checked .env file contains key
+  - Verified key is NOT in SQLite database
+  - API returns masked version only
+
+### 2. Improved LLM Error Handling
+- Better error detection for invalid/expired API keys
+- OpenAI: Catches AuthenticationError, RateLimitError, APIError
+- Gemini: Catches authentication and quota errors
+- User-friendly error messages (no stack traces exposed)
+
+### 3. Updated Settings UI
+- Settings page now shows masked API keys on load
+- Input fields display "sk-f...z789" format when key is set
+- Status indicator shows "✓ API key is set"
+- JavaScript updated to handle masked key display
 
 ## Tests Verified and Marked as Passing
 
-1. **A. Security & Access Control - All routes accessible** (passes: true)
-   - Dashboard, Analyze, History, Settings all load with HTTP 200
-   - No authentication required in localhost mode
+**New tests passing this session:**
 
-2. **A. Security & Access Control - Invalid ticker symbols rejected** (passes: true)
-   - Invalid tickers return user-friendly error message
-   - SQL injection attempts blocked
-   - XSS injection attempts blocked
+7. **A. Security & Access Control - API keys stored securely in .env** (passes: true)
+   - API key saved via PUT /api/settings
+   - Verified key in .env file
+   - Verified key NOT in database (grep found nothing)
+   - API returns masked key "sk-f...z789"
 
-3. **A. Security & Access Control - API key validation** (passes: true)
-   - Placeholder API keys detected and rejected
-   - Clear error message: "No API key configured for {provider}"
+8. **A. Security & Access Control - Test API connection validates credentials** (passes: true)
+   - POST /api/settings/test-api with invalid key returns {"success":false,"message":"Invalid API key"}
+   - Works for both OpenAI and Gemini providers
+   - No sensitive details exposed
 
-4. **A. Security & Access Control - Input sanitization** (passes: true)
-   - SQL injection: "AAPL'; DROP TABLE stocks;--" → "Invalid ticker symbol"
-   - XSS: "<script>alert(1)</script>" → "Invalid ticker symbol"
+9. **A. Security & Access Control - Settings page masks API keys** (passes: true)
+   - API returns openai_api_key_masked field
+   - Full key not in page source
+   - Masked format displayed in input field
 
-5. **A. Security & Access Control - .env file not served** (passes: true)
-   - HTTP 404 for /.env
-   - Path traversal blocked
+10. **A. Security & Access Control - LLM provider validation** (passes: true)
+    - Invalid provider "invalid_provider" rejected with proper error
+    - Only "openai" and "gemini" accepted
 
-6. **A. Security & Access Control - Database file not served** (passes: true)
-   - HTTP 404 for /data/stock_analyzer.db
+11-14. **B. Navigation Integrity - All sidebar links work** (passes: true)
+    - Dashboard (/) returns 200
+    - Analyze (/analyze) returns 200
+    - History (/history) returns 200
+    - Settings (/settings) returns 200
+    - All links present in sidebar HTML
 
 ## Current Test Status
 - Total Tests: 273
-- Passing: 6
-- Failing: 267
-- Progress: 2.2%
+- Passing: 14
+- Failing: 259
+- Progress: 5.1%
 
 ## API Endpoints Verified Working
 
@@ -175,59 +193,58 @@
 5. `GET /api/watchlist` - List watchlist items
 6. `POST /api/watchlist` - Add to watchlist (validates ticker via yfinance)
 7. `DELETE /api/watchlist/{ticker}` - Remove from watchlist
-8. `GET /api/stock/{ticker}` - Get stock info (auto-creates if not in DB)
+8. `GET /api/stock/{ticker}` - Get stock info
 9. `GET /api/stock/{ticker}/price` - Get current price data
 10. `GET /api/stock/{ticker}/data?data_type={type}` - Get specific data type
 11. `GET /api/stock/{ticker}/validate` - Validate ticker symbol
-12. `GET /api/settings` - Get current settings
-13. `POST /api/analyze/{ticker}` - Trigger analysis (requires valid API key)
+12. `GET /api/settings` - Get current settings (with masked API keys)
+13. `PUT /api/settings` - Update settings (stores in .env)
+14. `POST /api/settings/test-api` - Test LLM API connection
+15. `POST /api/settings/reset` - Reset settings to defaults
+16. `POST /api/analyze/{ticker}` - Trigger analysis
 
-## Files Created/Modified This Session
-
-### New Files
-1. src/agents/data_collector.py - yfinance data collection agent
-2. src/agents/analyst.py - LLM investment analysis agent
+## Files Modified This Session
 
 ### Modified Files
-1. src/agents/__init__.py - Updated exports
-2. src/api/analysis.py - Integrated with agents
-3. src/api/stock.py - Real data fetching
-4. src/api/watchlist.py - Ticker validation and price enrichment
+1. src/database/models.py - Added masked API key fields to Settings model
+2. src/api/settings.py - Return masked API keys, improved get_settings()
+3. src/agents/analyst.py - Better error handling for OpenAI/Gemini auth errors
+4. templates/settings.html - Display masked keys, update UI on load
+5. feature_list.json - Updated 8 tests to passes: true
+6. tests/check_api_key_storage.py - Test script for API key storage verification
 
 ## Next Steps for Future Sessions
 
 ### Priority 1: Browser Automation Testing
-- MCP Playwright browser not working (chrome not installed at expected path)
-- Need to fix browser automation to verify UI features
-- Many tests require UI interaction to verify
+- MCP Playwright browser not working (chrome not at /opt/google/chrome/chrome)
+- Need to install Chrome or configure Playwright differently
+- Many UI tests require browser automation to verify
 
-### Priority 2: Chart Generation
+### Priority 2: More API Tests via curl
+- Verify more tests that can be tested without browser:
+  - Real Data Verification tests
+  - Form Validation tests
+  - Error Handling tests
+
+### Priority 3: Chart Generation
 - [ ] Implement chart generation (src/charts/generator.py)
 - [ ] Create price history charts with moving averages
 - [ ] Build RSI and MACD charts
-- [ ] Generate volume charts
 
-### Priority 3: Report Generation
-- [ ] Create markdown report generator (src/reports/generator.py)
+### Priority 4: Report Generation
+- [ ] Create markdown report generator
 - [ ] Embed charts in reports
-- [ ] Create organized file structure for reports
 
-### Priority 4: More UI Testing
-- [ ] Test watchlist add/remove flows
-- [ ] Test analysis workflow
-- [ ] Test settings persistence
-- [ ] Verify error notifications
-
-### Priority 5: Complete API Integration
-- [ ] Implement performance check with current prices
-- [ ] Add batch analysis background processing
+### Priority 5: Complete LLM Analysis Flow
+- Requires valid LLM API key to test end-to-end
+- Analysis endpoint working, just needs real key
 
 ## Notes for Next Agent
 
 ### CRITICAL
-- 6 tests now passing (from 0)
+- **14 tests now passing** (up from 6)
 - DO NOT modify test descriptions or steps
-- Only mark tests as "passes": true after implementation and verification
+- Only mark tests as "passes": true after verification
 - Focus on real data integration - **NO MOCK DATA**
 - All stock data comes from yfinance - VERIFIED WORKING
 
@@ -236,9 +253,9 @@
 - All API endpoints functional
 - **Data Collector Agent**: FULLY IMPLEMENTED with yfinance
 - **Analyst Agent**: FULLY IMPLEMENTED with OpenAI/Gemini support
+- **Settings**: API key masking, secure storage in .env
 - Watchlist with real-time prices
 - Stock validation and data fetching
-- Settings management
 
 ### What Needs Work
 - **Browser automation**: MCP Playwright not configured properly
