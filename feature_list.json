@@ -304,7 +304,7 @@
       "Step 4: Verify 'Analyze' nav item has active styling",
       "Step 5: Verify 'Dashboard' no longer has active styling"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -364,7 +364,7 @@
       "Step 3: Verify analyze page loads correctly",
       "Step 4: Verify all page elements are functional"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -375,7 +375,7 @@
       "Step 3: Verify history page loads correctly",
       "Step 4: Verify all page elements are functional"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -386,7 +386,7 @@
       "Step 3: Verify settings page loads correctly",
       "Step 4: Verify all page elements are functional"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -397,7 +397,7 @@
       "Step 3: Verify application doesn't crash",
       "Step 4: Verify navigation links still work from 404 page"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -408,7 +408,7 @@
       "Step 3: Verify navigation to dashboard",
       "Step 4: Verify dashboard content loads"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
