@@ -1967,7 +1967,7 @@
       "Step 3: Verify current saved values are displayed",
       "Step 4: Verify not empty or wrong defaults"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2013,7 +2013,7 @@
       "Step 2: Verify it's a reasonable value (e.g., 1 hour)",
       "Step 3: Verify not 0 or unreasonably long"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
