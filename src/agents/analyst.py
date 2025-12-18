@@ -243,7 +243,7 @@ DATA AS OF: {stock_data.get('collected_at', datetime.now().isoformat())}
     ) -> AnalysisResult:
         """Analyze stock using OpenAI API."""
         try:
-            from openai import OpenAI
+            from openai import OpenAI, AuthenticationError, APIError, RateLimitError
 
             client = OpenAI(api_key=self.api_key)
 
@@ -263,7 +263,20 @@ DATA AS OF: {stock_data.get('collected_at', datetime.now().isoformat())}
             result_text = response.choices[0].message.content
             return self._parse_llm_response(result_text, stock_data, style)
 
+        except AuthenticationError as e:
+            logger.error(f"OpenAI authentication error: Invalid or expired API key")
+            raise ValueError("Invalid or expired OpenAI API key. Please check your API key in Settings.")
+        except RateLimitError as e:
+            logger.error(f"OpenAI rate limit error: {e}")
+            raise ValueError("OpenAI API rate limit exceeded. Please wait and try again later.")
+        except APIError as e:
+            logger.error(f"OpenAI API error: {e}")
+            raise ValueError(f"OpenAI API error: {str(e)}")
         except Exception as e:
+            error_str = str(e).lower()
+            if "authentication" in error_str or "api_key" in error_str or "invalid" in error_str:
+                logger.error(f"OpenAI authentication error: {e}")
+                raise ValueError("Invalid or expired OpenAI API key. Please check your API key in Settings.")
             logger.error(f"OpenAI API error: {e}")
             raise
 
@@ -296,6 +309,13 @@ DATA AS OF: {stock_data.get('collected_at', datetime.now().isoformat())}
             return self._parse_llm_response(result_text, stock_data, style)
 
         except Exception as e:
+            error_str = str(e).lower()
+            if "api_key" in error_str or "authentication" in error_str or "invalid" in error_str or "unauthorized" in error_str:
+                logger.error(f"Gemini authentication error: {e}")
+                raise ValueError("Invalid or expired Gemini API key. Please check your API key in Settings.")
+            if "quota" in error_str or "rate" in error_str or "limit" in error_str:
+                logger.error(f"Gemini rate limit error: {e}")
+                raise ValueError("Gemini API rate limit or quota exceeded. Please wait and try again later.")
             logger.error(f"Gemini API error: {e}")
             raise
 

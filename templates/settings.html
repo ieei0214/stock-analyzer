@@ -143,12 +143,33 @@
             const styleRadio = document.querySelector(`input[name="default_analysis_style"][value="${settings.default_analysis_style}"]`);
             if (styleRadio) styleRadio.checked = true;
 
-            // Show API key status
-            document.getElementById('openai-status').textContent = settings.openai_api_key_set ? '✓ API key is set' : '';
-            document.getElementById('openai-status').className = settings.openai_api_key_set ? 'mt-1 text-sm text-green-600' : 'mt-1 text-sm text-gray-500';
+            // Show masked API keys and status
+            const openaiInput = document.getElementById('openai-key');
+            const geminiInput = document.getElementById('gemini-key');
 
-            document.getElementById('gemini-status').textContent = settings.gemini_api_key_set ? '✓ API key is set' : '';
-            document.getElementById('gemini-status').className = settings.gemini_api_key_set ? 'mt-1 text-sm text-green-600' : 'mt-1 text-sm text-gray-500';
+            if (settings.openai_api_key_set && settings.openai_api_key_masked) {
+                openaiInput.value = settings.openai_api_key_masked;
+                openaiInput.placeholder = 'Enter new key to replace';
+                document.getElementById('openai-status').textContent = '✓ API key is set';
+                document.getElementById('openai-status').className = 'mt-1 text-sm text-green-600';
+            } else {
+                openaiInput.value = '';
+                openaiInput.placeholder = 'sk-...';
+                document.getElementById('openai-status').textContent = '';
+                document.getElementById('openai-status').className = 'mt-1 text-sm text-gray-500';
+            }
+
+            if (settings.gemini_api_key_set && settings.gemini_api_key_masked) {
+                geminiInput.value = settings.gemini_api_key_masked;
+                geminiInput.placeholder = 'Enter new key to replace';
+                document.getElementById('gemini-status').textContent = '✓ API key is set';
+                document.getElementById('gemini-status').className = 'mt-1 text-sm text-green-600';
+            } else {
+                geminiInput.value = '';
+                geminiInput.placeholder = 'AIza...';
+                document.getElementById('gemini-status').textContent = '';
+                document.getElementById('gemini-status').className = 'mt-1 text-sm text-gray-500';
+            }
 
         } catch (err) {
             showToast('Failed to load settings: ' + err.message, 'error');

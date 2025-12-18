@@ -42,10 +42,16 @@ async def get_settings():
     openai_key = os.getenv("OPENAI_API_KEY", "")
     gemini_key = os.getenv("GEMINI_API_KEY", "")
 
+    # Determine if keys are set (not placeholder values)
+    openai_key_set = bool(openai_key and openai_key != "your-openai-api-key-here")
+    gemini_key_set = bool(gemini_key and gemini_key != "your-gemini-api-key-here")
+
     return Settings(
         llm_provider=os.getenv("LLM_PROVIDER", "openai"),
-        openai_api_key_set=bool(openai_key and openai_key != "your-openai-api-key-here"),
-        gemini_api_key_set=bool(gemini_key and gemini_key != "your-gemini-api-key-here"),
+        openai_api_key_set=openai_key_set,
+        gemini_api_key_set=gemini_key_set,
+        openai_api_key_masked=mask_api_key(openai_key) if openai_key_set else None,
+        gemini_api_key_masked=mask_api_key(gemini_key) if gemini_key_set else None,
         model_name=os.getenv("MODEL_NAME", "gpt-4"),
         default_analysis_style=os.getenv("DEFAULT_ANALYSIS_STYLE", "Conservative"),
         cache_duration_hours=int(os.getenv("CACHE_DURATION_HOURS", "1"))

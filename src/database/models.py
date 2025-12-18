@@ -255,6 +255,8 @@ class Settings(BaseModel):
     llm_provider: str = 'openai'
     openai_api_key_set: bool = False
     gemini_api_key_set: bool = False
+    openai_api_key_masked: Optional[str] = None  # Masked version for display
+    gemini_api_key_masked: Optional[str] = None  # Masked version for display
     model_name: str = 'gpt-4'
     default_analysis_style: str = 'Conservative'
     cache_duration_hours: int = 1

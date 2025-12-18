@@ -27,7 +27,7 @@
       "Step 6: Check .env file exists and contains the API key",
       "Step 7: Verify API key is masked/hidden in UI after saving"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -116,7 +116,7 @@
       "Step 6: Click 'Test API Connection' button",
       "Step 7: Verify failure message without exposing sensitive details"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -129,7 +129,7 @@
       "Step 5: Verify API key field shows masked value (e.g., ****...****)",
       "Step 6: Verify full key is not visible in page source"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -188,7 +188,7 @@
       "Step 4: Attempt to submit form with manipulated provider value",
       "Step 5: Verify backend rejects invalid provider values"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -259,7 +259,7 @@
       "Step 3: Verify URL changes to dashboard route",
       "Step 4: Verify dashboard content loads correctly"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -270,7 +270,7 @@
       "Step 3: Verify URL changes to /analyze",
       "Step 4: Verify analyze page content loads with ticker input"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -281,7 +281,7 @@
       "Step 3: Verify URL changes to /history",
       "Step 4: Verify history page content loads with filters and table"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -292,7 +292,7 @@
       "Step 3: Verify URL changes to /settings",
       "Step 4: Verify settings page content loads with configuration options"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
