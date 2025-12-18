@@ -288,14 +288,14 @@
 
 ## Current Test Status
 - Total Tests: 273
-- Passing: 33
-- Failing: 240
-- Progress: 12.1%
+- Passing: 35
+- Failing: 238
+- Progress: 12.8%
 
 ## Notes for Next Agent
 
 ### CRITICAL
-- **33 tests now passing** (up from 27)
+- **35 tests now passing** (up from 27)
 - DO NOT modify test descriptions or steps
 - Only mark tests as "passes": true after verification
 - Focus on real data integration - **NO MOCK DATA**
