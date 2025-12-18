@@ -1158,7 +1158,7 @@
       "Step 3: Verify error message about LLM API appears",
       "Step 4: Verify message suggests possible solutions"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1191,7 +1191,7 @@
       "Step 3: Verify 'No results found' or empty state message appears",
       "Step 4: Verify no error is shown"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1203,7 +1203,7 @@
       "Step 4: Wait for completion",
       "Step 5: Verify loading state disappears"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1303,7 +1303,7 @@
       "Step 4: Verify response is parsed correctly",
       "Step 5: Verify UI updates with response data"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1374,7 +1374,7 @@
       "Step 3: Verify error message displayed to user",
       "Step 4: Verify UI doesn't break"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1385,7 +1385,7 @@
       "Step 3: Verify spinner remains during processing",
       "Step 4: Verify spinner disappears on completion"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1396,7 +1396,7 @@
       "Step 3: Verify charts are fetched/generated from API",
       "Step 4: Verify not static placeholder images"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1408,7 +1408,7 @@
       "Step 4: Verify request body contains all fields",
       "Step 5: Verify response is 200 OK"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1443,7 +1443,7 @@
       "Step 4: Query database directly",
       "Step 5: Verify record is deleted"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1455,7 +1455,7 @@
       "Step 4: Verify request includes style parameter",
       "Step 5: Verify analysis uses selected style"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1522,7 +1522,7 @@
       "Step 5: Click test connection",
       "Step 6: Verify failure response is shown"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1659,7 +1659,7 @@
       "Step 3: Navigate to /history?page=-5",
       "Step 4: Verify no crash, sensible fallback"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1670,7 +1670,7 @@
       "Step 3: Verify application handles it (truncate or error)",
       "Step 4: Verify no crash"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1744,7 +1744,7 @@
       "Step 2: Verify graceful error handling",
       "Step 3: Verify appropriate error message"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
