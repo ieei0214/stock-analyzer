@@ -1,0 +1,3085 @@
+[
+  {
+    "category": "functional",
+    "description": "A. Security & Access Control - All routes are accessible without authentication in localhost single-user mode",
+    "steps": [
+      "Step 1: Start the application server",
+      "Step 2: Navigate to http://localhost:8000",
+      "Step 3: Verify dashboard page loads without any login prompt",
+      "Step 4: Navigate to /analyze page directly",
+      "Step 5: Verify analyze page loads without authentication",
+      "Step 6: Navigate to /history page directly",
+      "Step 7: Verify history page loads without authentication",
+      "Step 8: Navigate to /settings page directly",
+      "Step 9: Verify settings page loads without authentication"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "A. Security & Access Control - API keys are stored securely in .env file, not in database",
+    "steps": [
+      "Step 1: Navigate to settings page",
+      "Step 2: Enter a test API key",
+      "Step 3: Save settings",
+      "Step 4: Query the SQLite database directly",
+      "Step 5: Verify API key is NOT stored in any database table",
+      "Step 6: Check .env file exists and contains the API key",
+      "Step 7: Verify API key is masked/hidden in UI after saving"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "A. Security & Access Control - Invalid ticker symbols are rejected with user-friendly error",
+    "steps": [
+      "Step 1: Navigate to analyze page",
+      "Step 2: Enter an invalid ticker symbol 'INVALIDXYZ123'",
+      "Step 3: Click analyze button",
+      "Step 4: Verify error message appears indicating invalid ticker",
+      "Step 5: Verify no data is stored in database for invalid ticker",
+      "Step 6: Verify application remains functional after error"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "A. Security & Access Control - API key validation before allowing LLM operations",
+    "steps": [
+      "Step 1: Clear all API keys from settings",
+      "Step 2: Navigate to analyze page",
+      "Step 3: Enter a valid ticker symbol 'AAPL'",
+      "Step 4: Click analyze button",
+      "Step 5: Verify error message about missing API key appears",
+      "Step 6: Verify analysis does not proceed without valid API key"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "A. Security & Access Control - Error handling for invalid/expired LLM API tokens",
+    "steps": [
+      "Step 1: Navigate to settings page",
+      "Step 2: Enter an invalid API key 'sk-invalid12345'",
+      "Step 3: Save settings",
+      "Step 4: Navigate to analyze page",
+      "Step 5: Enter ticker 'AAPL' and click analyze",
+      "Step 6: Verify error message about invalid API key appears",
+      "Step 7: Verify no sensitive error details are exposed"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "A. Security & Access Control - Input sanitization for ticker symbols prevents injection attacks",
+    "steps": [
+      "Step 1: Navigate to analyze page",
+      "Step 2: Enter ticker with SQL injection attempt: \"AAPL'; DROP TABLE stocks;--\"",
+      "Step 3: Verify input is sanitized and rejected",
+      "Step 4: Enter ticker with script injection: \"<script>alert('xss')</script>\"",
+      "Step 5: Verify input is sanitized and no script executes"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "A. Security & Access Control - Rate limit detection and user notification",
+    "steps": [
+      "Step 1: Configure a very low rate limit for testing",
+      "Step 2: Trigger multiple analyses rapidly",
+      "Step 3: Verify rate limit warning appears to user",
+      "Step 4: Verify helpful message about waiting is shown",
+      "Step 5: Verify application doesn't crash on rate limit"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "A. Security & Access Control - Error logs don't expose sensitive API keys",
+    "steps": [
+      "Step 1: Configure logging and intentionally trigger an API error",
+      "Step 2: Check the error log file",
+      "Step 3: Verify API keys are masked or not present in logs",
+      "Step 4: Verify stack traces don't contain sensitive credentials"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "A. Security & Access Control - Test API connection button validates credentials securely",
+    "steps": [
+      "Step 1: Navigate to settings page",
+      "Step 2: Enter valid API key",
+      "Step 3: Click 'Test API Connection' button",
+      "Step 4: Verify connection status is displayed",
+      "Step 5: Enter invalid API key",
+      "Step 6: Click 'Test API Connection' button",
+      "Step 7: Verify failure message without exposing sensitive details"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "A. Security & Access Control - Settings page masks API keys after entry",
+    "steps": [
+      "Step 1: Navigate to settings page",
+      "Step 2: Enter an API key",
+      "Step 3: Save settings",
+      "Step 4: Refresh the page",
+      "Step 5: Verify API key field shows masked value (e.g., ****...****)",
+      "Step 6: Verify full key is not visible in page source"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "A. Security & Access Control - yfinance API errors handled gracefully",
+    "steps": [
+      "Step 1: Simulate network failure or yfinance unavailability",
+      "Step 2: Attempt to analyze a stock",
+      "Step 3: Verify user-friendly error message appears",
+      "Step 4: Verify application suggests troubleshooting steps",
+      "Step 5: Verify no technical stack traces shown to user"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "A. Security & Access Control - Network timeout handling doesn't hang UI indefinitely",
+    "steps": [
+      "Step 1: Configure a very short timeout (1 second)",
+      "Step 2: Attempt to fetch data for a stock",
+      "Step 3: Verify timeout error appears within reasonable time",
+      "Step 4: Verify UI remains responsive after timeout",
+      "Step 5: Verify retry option is available"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "A. Security & Access Control - .env file is not served via web server",
+    "steps": [
+      "Step 1: Start the application server",
+      "Step 2: Attempt to access http://localhost:8000/.env directly",
+      "Step 3: Verify 404 or 403 response",
+      "Step 4: Attempt to access http://localhost:8000/../.env",
+      "Step 5: Verify path traversal is blocked"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "A. Security & Access Control - Database file is not accessible via web server",
+    "steps": [
+      "Step 1: Start the application server",
+      "Step 2: Attempt to access http://localhost:8000/data/stock_analyzer.db",
+      "Step 3: Verify database file is not served",
+      "Step 4: Verify proper 404 or 403 response"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "A. Security & Access Control - LLM provider selection only allows valid options",
+    "steps": [
+      "Step 1: Navigate to settings page",
+      "Step 2: Inspect provider dropdown options",
+      "Step 3: Verify only 'openai' and 'gemini' are available",
+      "Step 4: Attempt to submit form with manipulated provider value",
+      "Step 5: Verify backend rejects invalid provider values"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "A. Security & Access Control - Settings save requires all required fields",
+    "steps": [
+      "Step 1: Navigate to settings page",
+      "Step 2: Clear the API key field",
+      "Step 3: Attempt to save settings",
+      "Step 4: Verify validation error for missing API key",
+      "Step 5: Verify settings are not saved with missing required fields"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "A. Security & Access Control - Background task IDs are not predictable/enumerable",
+    "steps": [
+      "Step 1: Trigger a background analysis task",
+      "Step 2: Note the task ID format",
+      "Step 3: Attempt to access tasks with sequential IDs",
+      "Step 4: Verify task IDs use UUIDs or random identifiers",
+      "Step 5: Verify cannot enumerate other tasks"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "A. Security & Access Control - Report files are only accessible through proper API endpoints",
+    "steps": [
+      "Step 1: Generate an analysis report",
+      "Step 2: Note the report file path",
+      "Step 3: Attempt to access report via direct URL path traversal",
+      "Step 4: Verify reports are served through proper API endpoints only"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "A. Security & Access Control - Cancel task operation validates task ownership",
+    "steps": [
+      "Step 1: Trigger a background analysis task",
+      "Step 2: Get the task ID",
+      "Step 3: Call cancel endpoint with valid task ID",
+      "Step 4: Verify task is cancelled",
+      "Step 5: Call cancel with invalid task ID",
+      "Step 6: Verify appropriate error response"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "A. Security & Access Control - API responses don't leak internal server paths",
+    "steps": [
+      "Step 1: Trigger various API errors",
+      "Step 2: Inspect error responses",
+      "Step 3: Verify no internal file paths are exposed",
+      "Step 4: Verify no database paths are exposed",
+      "Step 5: Verify no Python traceback in API responses"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "B. Navigation Integrity - Sidebar Dashboard link navigates to dashboard page",
+    "steps": [
+      "Step 1: Navigate to any page in the application",
+      "Step 2: Click 'Dashboard' in the sidebar",
+      "Step 3: Verify URL changes to dashboard route",
+      "Step 4: Verify dashboard content loads correctly"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "B. Navigation Integrity - Sidebar Analyze link navigates to analyze page",
+    "steps": [
+      "Step 1: Navigate to dashboard",
+      "Step 2: Click 'Analyze' in the sidebar",
+      "Step 3: Verify URL changes to /analyze",
+      "Step 4: Verify analyze page content loads with ticker input"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "B. Navigation Integrity - Sidebar History link navigates to history page",
+    "steps": [
+      "Step 1: Navigate to dashboard",
+      "Step 2: Click 'History' in the sidebar",
+      "Step 3: Verify URL changes to /history",
+      "Step 4: Verify history page content loads with filters and table"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "B. Navigation Integrity - Sidebar Settings link navigates to settings page",
+    "steps": [
+      "Step 1: Navigate to dashboard",
+      "Step 2: Click 'Settings' in the sidebar",
+      "Step 3: Verify URL changes to /settings",
+      "Step 4: Verify settings page content loads with configuration options"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "B. Navigation Integrity - Active navigation state shows correct selected page",
+    "steps": [
+      "Step 1: Navigate to dashboard",
+      "Step 2: Verify 'Dashboard' nav item has active styling",
+      "Step 3: Navigate to analyze page",
+      "Step 4: Verify 'Analyze' nav item has active styling",
+      "Step 5: Verify 'Dashboard' no longer has active styling"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "B. Navigation Integrity - View button in watchlist opens stock detail",
+    "steps": [
+      "Step 1: Add a stock 'AAPL' to watchlist",
+      "Step 2: Run analysis on the stock",
+      "Step 3: Click 'View' action button in watchlist table",
+      "Step 4: Verify stock detail/analysis page opens",
+      "Step 5: Verify correct stock data is displayed"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "B. Navigation Integrity - Analyze button in watchlist triggers analysis for correct stock",
+    "steps": [
+      "Step 1: Add stocks 'AAPL' and 'MSFT' to watchlist",
+      "Step 2: Click 'Analyze' button next to 'MSFT' in table",
+      "Step 3: Verify analysis is triggered for 'MSFT' (not 'AAPL')",
+      "Step 4: Verify loading state shows for MSFT row"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "B. Navigation Integrity - Delete button in watchlist removes correct stock",
+    "steps": [
+      "Step 1: Add stocks 'AAPL', 'MSFT', 'GOOGL' to watchlist",
+      "Step 2: Click 'Delete' button next to 'MSFT'",
+      "Step 3: Confirm deletion in dialog",
+      "Step 4: Verify only 'MSFT' is removed",
+      "Step 5: Verify 'AAPL' and 'GOOGL' remain in list"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "B. Navigation Integrity - Browser back button works correctly after navigation",
+    "steps": [
+      "Step 1: Navigate to dashboard",
+      "Step 2: Click to analyze page",
+      "Step 3: Click to history page",
+      "Step 4: Click browser back button",
+      "Step 5: Verify analyze page is shown",
+      "Step 6: Click browser back again",
+      "Step 7: Verify dashboard is shown"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "B. Navigation Integrity - Deep linking to analyze page works",
+    "steps": [
+      "Step 1: Open new browser tab",
+      "Step 2: Navigate directly to http://localhost:8000/analyze",
+      "Step 3: Verify analyze page loads correctly",
+      "Step 4: Verify all page elements are functional"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "B. Navigation Integrity - Deep linking to history page works",
+    "steps": [
+      "Step 1: Open new browser tab",
+      "Step 2: Navigate directly to http://localhost:8000/history",
+      "Step 3: Verify history page loads correctly",
+      "Step 4: Verify all page elements are functional"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "B. Navigation Integrity - Deep linking to settings page works",
+    "steps": [
+      "Step 1: Open new browser tab",
+      "Step 2: Navigate directly to http://localhost:8000/settings",
+      "Step 3: Verify settings page loads correctly",
+      "Step 4: Verify all page elements are functional"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "B. Navigation Integrity - 404 page shown for non-existent routes",
+    "steps": [
+      "Step 1: Navigate to http://localhost:8000/nonexistent",
+      "Step 2: Verify 404 page is displayed",
+      "Step 3: Verify application doesn't crash",
+      "Step 4: Verify navigation links still work from 404 page"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "B. Navigation Integrity - App title in header links to dashboard",
+    "steps": [
+      "Step 1: Navigate to settings page",
+      "Step 2: Click on app title 'Stock Analyzer' in header",
+      "Step 3: Verify navigation to dashboard",
+      "Step 4: Verify dashboard content loads"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "B. Navigation Integrity - Cancel button on analyze page returns to previous page",
+    "steps": [
+      "Step 1: Navigate to dashboard",
+      "Step 2: Click to go to analyze page",
+      "Step 3: Click cancel button (if present)",
+      "Step 4: Verify return to dashboard"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "B. Navigation Integrity - Download Report link opens correct report",
+    "steps": [
+      "Step 1: Analyze stock 'AAPL'",
+      "Step 2: Click 'Download Report' link",
+      "Step 3: Verify correct markdown report opens/downloads",
+      "Step 4: Verify report contains AAPL data"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "B. Navigation Integrity - Add to Watchlist button on analyze page navigates correctly",
+    "steps": [
+      "Step 1: Navigate to analyze page",
+      "Step 2: Analyze stock 'NVDA'",
+      "Step 3: Click 'Add to Watchlist' button",
+      "Step 4: Verify stock is added to watchlist",
+      "Step 5: Navigate to dashboard",
+      "Step 6: Verify 'NVDA' appears in watchlist"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "B. Navigation Integrity - Check Performance button in history opens performance view",
+    "steps": [
+      "Step 1: Analyze a stock and view it in history",
+      "Step 2: Click 'Check Performance' button for the analysis",
+      "Step 3: Verify performance data is displayed",
+      "Step 4: Verify correct analysis is being checked"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "B. Navigation Integrity - History table row click shows analysis detail",
+    "steps": [
+      "Step 1: Create multiple analyses for different stocks",
+      "Step 2: Go to history page",
+      "Step 3: Click on a specific analysis row",
+      "Step 4: Verify analysis detail view opens",
+      "Step 5: Verify correct analysis data is shown"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "B. Navigation Integrity - Pagination links work correctly on history page",
+    "steps": [
+      "Step 1: Create more than 10 analyses to trigger pagination",
+      "Step 2: Go to history page",
+      "Step 3: Click 'Next' or page 2 link",
+      "Step 4: Verify page 2 content loads",
+      "Step 5: Click 'Previous' or page 1 link",
+      "Step 6: Verify page 1 content loads"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "B. Navigation Integrity - Pagination preserves current filters",
+    "steps": [
+      "Step 1: Create analyses for multiple stocks",
+      "Step 2: Go to history page and apply ticker filter",
+      "Step 3: Navigate to page 2",
+      "Step 4: Verify filter is still applied",
+      "Step 5: Verify filtered results on page 2"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "B. Navigation Integrity - Modal close button returns to previous state",
+    "steps": [
+      "Step 1: Click delete button to open confirmation modal",
+      "Step 2: Click 'X' close button on modal",
+      "Step 3: Verify modal closes",
+      "Step 4: Verify no action was taken",
+      "Step 5: Verify original page state is preserved"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "B. Navigation Integrity - Modal Cancel button returns to previous state",
+    "steps": [
+      "Step 1: Click delete button to open confirmation modal",
+      "Step 2: Click 'Cancel' button on modal",
+      "Step 3: Verify modal closes",
+      "Step 4: Verify no action was taken"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "B. Navigation Integrity - Settings save redirects or stays on page appropriately",
+    "steps": [
+      "Step 1: Navigate to settings page",
+      "Step 2: Make a change to settings",
+      "Step 3: Click save button",
+      "Step 4: Verify success message appears",
+      "Step 5: Verify user stays on settings page with updated values"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "B. Navigation Integrity - Reset button in settings restores defaults without navigation",
+    "steps": [
+      "Step 1: Navigate to settings page",
+      "Step 2: Modify settings from defaults",
+      "Step 3: Click 'Reset to Defaults' button",
+      "Step 4: Verify settings are restored to defaults",
+      "Step 5: Verify user remains on settings page"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "C. Real Data Verification - Create watchlist stock with unique name and verify persistence",
+    "steps": [
+      "Step 1: Add stock 'AAPL' to watchlist with timestamp TEST_VERIFY_001",
+      "Step 2: Verify stock appears in watchlist table",
+      "Step 3: Refresh the browser page",
+      "Step 4: Verify 'AAPL' still appears in watchlist",
+      "Step 5: Query database directly to verify record exists"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "C. Real Data Verification - Analysis data persists after page refresh",
+    "steps": [
+      "Step 1: Analyze stock 'MSFT'",
+      "Step 2: Note the recommendation and reasoning",
+      "Step 3: Refresh the browser page",
+      "Step 4: Navigate to history page",
+      "Step 5: Verify analysis for 'MSFT' exists with same data"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "C. Real Data Verification - Delete stock removes from database permanently",
+    "steps": [
+      "Step 1: Add stock 'TEST123' to watchlist (if valid) or use 'AAPL'",
+      "Step 2: Verify it appears in watchlist",
+      "Step 3: Delete the stock from watchlist",
+      "Step 4: Verify it's gone from UI",
+      "Step 5: Query database directly",
+      "Step 6: Verify record is removed from watchlist table"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "C. Real Data Verification - Dashboard statistics reflect real record counts",
+    "steps": [
+      "Step 1: Start with empty watchlist",
+      "Step 2: Note the watchlist count (should be 0)",
+      "Step 3: Add 3 stocks to watchlist",
+      "Step 4: Verify count shows 3",
+      "Step 5: Delete 1 stock",
+      "Step 6: Verify count shows 2"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "C. Real Data Verification - Analysis prices match real market data",
+    "steps": [
+      "Step 1: Analyze stock 'AAPL'",
+      "Step 2: Note the 'price at analysis' value",
+      "Step 3: Compare with yfinance or other source",
+      "Step 4: Verify price is recent/accurate (within reasonable margin)"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "C. Real Data Verification - Price history chart shows real historical data",
+    "steps": [
+      "Step 1: Analyze stock 'GOOGL'",
+      "Step 2: View the price history chart",
+      "Step 3: Compare chart data points with known historical prices",
+      "Step 4: Verify data is not mock/static"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "C. Real Data Verification - Financial metrics match yfinance data",
+    "steps": [
+      "Step 1: Analyze stock 'MSFT'",
+      "Step 2: Note the P/E ratio displayed",
+      "Step 3: Query yfinance directly for MSFT P/E ratio",
+      "Step 4: Verify values match (or are recent)",
+      "Step 5: Repeat for EPS, revenue growth"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "C. Real Data Verification - Technical indicators calculated from real price data",
+    "steps": [
+      "Step 1: Analyze stock 'NVDA'",
+      "Step 2: View RSI value displayed",
+      "Step 3: View 50-day and 200-day MA values",
+      "Step 4: Manually calculate or verify against known source",
+      "Step 5: Verify calculations are based on real data"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "C. Real Data Verification - News headlines are real and recent",
+    "steps": [
+      "Step 1: Analyze stock 'TSLA'",
+      "Step 2: View news headlines section",
+      "Step 3: Verify headlines are recent (within last week)",
+      "Step 4: Click/verify news sources are real",
+      "Step 5: Verify not placeholder/mock news"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "C. Real Data Verification - Analyst ratings reflect real data",
+    "steps": [
+      "Step 1: Analyze a well-covered stock 'AAPL'",
+      "Step 2: View analyst ratings section",
+      "Step 3: Compare with known analyst ratings from financial sites",
+      "Step 4: Verify data is real, not mocked"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "C. Real Data Verification - Empty state shown correctly when no data exists",
+    "steps": [
+      "Step 1: Start with fresh database",
+      "Step 2: Navigate to dashboard",
+      "Step 3: Verify empty state message for watchlist",
+      "Step 4: Navigate to history page",
+      "Step 5: Verify empty state message for analyses"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "C. Real Data Verification - Performance tracking shows real gain/loss calculations",
+    "steps": [
+      "Step 1: Analyze stock 'AAPL' and note price at analysis",
+      "Step 2: Wait or use test data with known price change",
+      "Step 3: Trigger performance check",
+      "Step 4: Verify gain/loss % is calculated correctly from real prices"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "C. Real Data Verification - Timestamps are real and accurate",
+    "steps": [
+      "Step 1: Note current time",
+      "Step 2: Add a stock to watchlist",
+      "Step 3: Verify added_at timestamp is close to current time",
+      "Step 4: Run an analysis",
+      "Step 5: Verify analysis_date timestamp is accurate"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "C. Real Data Verification - Report files contain real analysis data",
+    "steps": [
+      "Step 1: Analyze stock 'AMZN'",
+      "Step 2: Download/open the generated report file",
+      "Step 3: Verify report contains the specific analysis data shown in UI",
+      "Step 4: Verify charts in report match UI charts",
+      "Step 5: Verify not template/mock content"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "C. Real Data Verification - Cache expiration works with real timestamps",
+    "steps": [
+      "Step 1: Analyze stock and note cache_expires_at timestamp",
+      "Step 2: Verify it's based on configured cache duration",
+      "Step 3: After cache expires, trigger refresh",
+      "Step 4: Verify new data is fetched with updated timestamps"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "C. Real Data Verification - Search/filter returns actual matching data",
+    "steps": [
+      "Step 1: Create analyses for AAPL, MSFT, GOOGL",
+      "Step 2: Go to history page",
+      "Step 3: Filter by ticker 'AAPL'",
+      "Step 4: Verify only AAPL analyses shown",
+      "Step 5: Verify MSFT and GOOGL analyses are hidden"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "C. Real Data Verification - Market status indicator reflects real market hours",
+    "steps": [
+      "Step 1: Check current time against US market hours",
+      "Step 2: View market status indicator in header",
+      "Step 3: Verify indicator correctly shows 'Market Open' or 'Market Closed'"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "C. Real Data Verification - Company name and sector from real data",
+    "steps": [
+      "Step 1: Add stock 'AAPL' to watchlist",
+      "Step 2: Verify company name shows 'Apple Inc.' (or similar)",
+      "Step 3: Verify sector shows 'Technology' (or correct sector)",
+      "Step 4: Verify not generic placeholder values"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "C. Real Data Verification - Dividend yield shows real data or N/A appropriately",
+    "steps": [
+      "Step 1: Analyze a dividend-paying stock like 'KO' (Coca-Cola)",
+      "Step 2: Verify dividend yield is displayed and realistic",
+      "Step 3: Analyze a non-dividend stock like 'AMZN'",
+      "Step 4: Verify appropriate N/A or 0% display"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "C. Real Data Verification - MACD values calculated from real price data",
+    "steps": [
+      "Step 1: Analyze stock 'SPY'",
+      "Step 2: View MACD chart and values",
+      "Step 3: Verify MACD line, signal line, and histogram are displayed",
+      "Step 4: Compare with known MACD calculation"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "C. Real Data Verification - Data changes when analyzing different stocks",
+    "steps": [
+      "Step 1: Analyze 'AAPL' and note all displayed data",
+      "Step 2: Analyze 'MSFT'",
+      "Step 3: Verify displayed data is different and specific to MSFT",
+      "Step 4: Verify not showing same static data for all stocks"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "C. Real Data Verification - LLM reasoning is unique per analysis",
+    "steps": [
+      "Step 1: Analyze 'AAPL' and read the reasoning",
+      "Step 2: Analyze 'TSLA' and read the reasoning",
+      "Step 3: Verify reasoning is different and specific to each stock",
+      "Step 4: Verify not using template/generic responses"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "C. Real Data Verification - Volume chart reflects real trading volume",
+    "steps": [
+      "Step 1: Analyze a stock",
+      "Step 2: View volume chart",
+      "Step 3: Compare with known volume data from financial sites",
+      "Step 4: Verify volume patterns match real trading activity"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "C. Real Data Verification - Insider trading data reflects real filings",
+    "steps": [
+      "Step 1: Analyze a stock with recent insider activity",
+      "Step 2: View insider trading section",
+      "Step 3: Verify data matches SEC filings or known insider trades",
+      "Step 4: Verify not mock insider data"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "C. Real Data Verification - Price target range is based on real analyst data",
+    "steps": [
+      "Step 1: Analyze a well-covered stock",
+      "Step 2: View analyst price targets section",
+      "Step 3: Verify low/high/mean targets are realistic",
+      "Step 4: Compare with known analyst targets"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "C. Real Data Verification - Historical performance shows real calculated percentages",
+    "steps": [
+      "Step 1: Create an analysis with known price",
+      "Step 2: After price change, trigger performance check",
+      "Step 3: Manually calculate expected gain/loss %",
+      "Step 4: Verify displayed percentage matches calculation"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "C. Real Data Verification - Export data matches displayed data",
+    "steps": [
+      "Step 1: View history page with analyses",
+      "Step 2: Export to CSV",
+      "Step 3: Open CSV file",
+      "Step 4: Verify CSV data matches UI display exactly"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "C. Real Data Verification - Settings persist after application restart",
+    "steps": [
+      "Step 1: Configure settings with specific values",
+      "Step 2: Save settings",
+      "Step 3: Restart the application server",
+      "Step 4: Navigate to settings page",
+      "Step 5: Verify saved values are still present"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "C. Real Data Verification - Cache indicator shows accurate data freshness",
+    "steps": [
+      "Step 1: Fetch fresh data for a stock",
+      "Step 2: Note the 'data freshness' indicator",
+      "Step 3: Verify it shows 'just now' or recent time",
+      "Step 4: Wait and verify indicator updates appropriately"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "D. Workflow Completeness - Add stock to watchlist workflow",
+    "steps": [
+      "Step 1: Navigate to dashboard",
+      "Step 2: Enter ticker 'AAPL' in add stock input",
+      "Step 3: Click 'Add' button",
+      "Step 4: Verify loading state appears",
+      "Step 5: Verify stock appears in watchlist table",
+      "Step 6: Verify success notification appears"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "D. Workflow Completeness - Remove stock from watchlist workflow",
+    "steps": [
+      "Step 1: Add stock 'AAPL' to watchlist",
+      "Step 2: Click delete button for 'AAPL'",
+      "Step 3: Verify confirmation dialog appears",
+      "Step 4: Click confirm",
+      "Step 5: Verify stock is removed from table",
+      "Step 6: Verify success notification appears"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "D. Workflow Completeness - Single stock analysis workflow end-to-end",
+    "steps": [
+      "Step 1: Navigate to analyze page",
+      "Step 2: Enter ticker 'MSFT'",
+      "Step 3: Select analysis style (Conservative)",
+      "Step 4: Click 'Analyze' button",
+      "Step 5: Verify loading indicator appears",
+      "Step 6: Verify recommendation displays (Buy/Sell/Hold)",
+      "Step 7: Verify reasoning bullet points appear",
+      "Step 8: Verify charts load correctly",
+      "Step 9: Verify 'Add to Watchlist' button is available",
+      "Step 10: Verify 'Download Report' link is available"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "D. Workflow Completeness - Analyze All stocks in watchlist workflow",
+    "steps": [
+      "Step 1: Add 3 stocks to watchlist (AAPL, MSFT, GOOGL)",
+      "Step 2: Click 'Analyze All' button",
+      "Step 3: Verify confirmation appears",
+      "Step 4: Confirm batch analysis",
+      "Step 5: Verify progress indicator shows",
+      "Step 6: Verify each stock shows processing state",
+      "Step 7: Wait for completion",
+      "Step 8: Verify all 3 stocks have updated analysis data"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "D. Workflow Completeness - Performance check workflow",
+    "steps": [
+      "Step 1: Analyze a stock",
+      "Step 2: Navigate to history page",
+      "Step 3: Find the analysis row",
+      "Step 4: Click 'Check Performance' button",
+      "Step 5: Verify current price is fetched",
+      "Step 6: Verify gain/loss is calculated and displayed",
+      "Step 7: Verify performance check is saved to database"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "D. Workflow Completeness - Settings update workflow",
+    "steps": [
+      "Step 1: Navigate to settings page",
+      "Step 2: Change LLM provider from OpenAI to Gemini",
+      "Step 3: Update cache duration to 6 hours",
+      "Step 4: Click 'Save' button",
+      "Step 5: Verify success notification",
+      "Step 6: Refresh page",
+      "Step 7: Verify settings are saved"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "D. Workflow Completeness - Test API connection workflow",
+    "steps": [
+      "Step 1: Navigate to settings page",
+      "Step 2: Enter API key",
+      "Step 3: Select provider",
+      "Step 4: Click 'Test API Connection' button",
+      "Step 5: Verify loading indicator appears",
+      "Step 6: Verify success or failure status is displayed"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "D. Workflow Completeness - Refresh stock data workflow",
+    "steps": [
+      "Step 1: Analyze a stock (data is cached)",
+      "Step 2: Click 'Refresh Data' button",
+      "Step 3: Verify loading indicator appears",
+      "Step 4: Verify fresh data is fetched",
+      "Step 5: Verify cache timestamp is updated"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "D. Workflow Completeness - Cancel background task workflow",
+    "steps": [
+      "Step 1: Trigger 'Analyze All' for multiple stocks",
+      "Step 2: While processing, click 'Cancel' button",
+      "Step 3: Verify cancellation is requested",
+      "Step 4: Verify task stops (or finishes current item)",
+      "Step 5: Verify appropriate message is shown"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "D. Workflow Completeness - Filter history by date range workflow",
+    "steps": [
+      "Step 1: Create analyses on different dates",
+      "Step 2: Navigate to history page",
+      "Step 3: Set date range filter (e.g., last 7 days)",
+      "Step 4: Verify only analyses within range are shown",
+      "Step 5: Clear date filter",
+      "Step 6: Verify all analyses are shown again"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "D. Workflow Completeness - Filter history by ticker workflow",
+    "steps": [
+      "Step 1: Create analyses for AAPL and MSFT",
+      "Step 2: Navigate to history page",
+      "Step 3: Select 'AAPL' from ticker filter dropdown",
+      "Step 4: Verify only AAPL analyses are shown",
+      "Step 5: Select 'All' from ticker filter",
+      "Step 6: Verify all analyses are shown"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "D. Workflow Completeness - Sort history table workflow",
+    "steps": [
+      "Step 1: Create multiple analyses",
+      "Step 2: Navigate to history page",
+      "Step 3: Click date column header to sort",
+      "Step 4: Verify sort order changes",
+      "Step 5: Click again to reverse sort",
+      "Step 6: Verify reverse order"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "D. Workflow Completeness - Reset settings to defaults workflow",
+    "steps": [
+      "Step 1: Navigate to settings page",
+      "Step 2: Modify multiple settings from defaults",
+      "Step 3: Save settings",
+      "Step 4: Click 'Reset to Defaults' button",
+      "Step 5: Verify confirmation appears",
+      "Step 6: Confirm reset",
+      "Step 7: Verify all settings return to defaults"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "D. Workflow Completeness - Switch analysis style workflow",
+    "steps": [
+      "Step 1: Navigate to analyze page",
+      "Step 2: Enter ticker 'AAPL'",
+      "Step 3: Select 'Conservative' style",
+      "Step 4: Analyze and note recommendation",
+      "Step 5: Analyze same stock with 'Aggressive' style",
+      "Step 6: Verify analysis runs with different style",
+      "Step 7: Verify style is recorded in analysis history"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "D. Workflow Completeness - Export history to CSV workflow",
+    "steps": [
+      "Step 1: Create several analyses",
+      "Step 2: Navigate to history page",
+      "Step 3: Click 'Export to CSV' button",
+      "Step 4: Verify file download initiates",
+      "Step 5: Open downloaded file",
+      "Step 6: Verify data is correctly formatted"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "D. Workflow Completeness - View full analysis report workflow",
+    "steps": [
+      "Step 1: Analyze a stock",
+      "Step 2: Click 'View Report' or report link",
+      "Step 3: Verify full markdown report loads",
+      "Step 4: Verify all sections are present (summary, charts, news, etc.)"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "D. Workflow Completeness - Switch LLM provider workflow",
+    "steps": [
+      "Step 1: Configure OpenAI as provider with API key",
+      "Step 2: Analyze a stock successfully",
+      "Step 3: Switch to Gemini provider",
+      "Step 4: Enter Gemini API key",
+      "Step 5: Analyze same stock",
+      "Step 6: Verify analysis completes with Gemini",
+      "Step 7: Verify provider is recorded in analysis"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "D. Workflow Completeness - View stock detail from dashboard workflow",
+    "steps": [
+      "Step 1: Add and analyze stock 'AAPL'",
+      "Step 2: On dashboard, click on 'AAPL' row",
+      "Step 3: Verify stock detail page opens",
+      "Step 4: Verify all stock data is displayed"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "D. Workflow Completeness - Navigate charts carousel workflow",
+    "steps": [
+      "Step 1: Analyze a stock",
+      "Step 2: View charts section",
+      "Step 3: Click next arrow to view next chart",
+      "Step 4: Verify different chart displays (price, volume, RSI, MACD)",
+      "Step 5: Click previous arrow",
+      "Step 6: Verify navigation works correctly"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "E. Error Handling - Network failure shows user-friendly error",
+    "steps": [
+      "Step 1: Disable network or simulate offline",
+      "Step 2: Try to analyze a stock",
+      "Step 3: Verify user-friendly error message appears",
+      "Step 4: Verify no technical stack trace shown",
+      "Step 5: Verify application remains functional"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "E. Error Handling - Invalid ticker input shows field-level error",
+    "steps": [
+      "Step 1: Navigate to analyze page",
+      "Step 2: Enter empty ticker",
+      "Step 3: Click analyze",
+      "Step 4: Verify error message appears near input field",
+      "Step 5: Enter ticker with special characters",
+      "Step 6: Verify validation error appears"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "E. Error Handling - LLM API error displays meaningful message",
+    "steps": [
+      "Step 1: Configure invalid or rate-limited API key",
+      "Step 2: Try to analyze a stock",
+      "Step 3: Verify error message about LLM API appears",
+      "Step 4: Verify message suggests possible solutions"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "E. Error Handling - 404 responses handled gracefully",
+    "steps": [
+      "Step 1: Navigate to /analysis/NONEXISTENT_TICKER",
+      "Step 2: Verify friendly 'not found' message appears",
+      "Step 3: Verify application doesn't crash",
+      "Step 4: Verify navigation still works"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "E. Error Handling - 500 errors don't expose stack traces",
+    "steps": [
+      "Step 1: Trigger a server error (if possible)",
+      "Step 2: Verify error page shown",
+      "Step 3: Verify no Python traceback visible",
+      "Step 4: Verify friendly error message displayed"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "E. Error Handling - Empty search results show 'no results found'",
+    "steps": [
+      "Step 1: Navigate to history page",
+      "Step 2: Apply filter that matches nothing",
+      "Step 3: Verify 'No results found' or empty state message appears",
+      "Step 4: Verify no error is shown"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "E. Error Handling - Loading states shown during async operations",
+    "steps": [
+      "Step 1: Click 'Analyze' button for a stock",
+      "Step 2: Verify loading spinner/indicator appears immediately",
+      "Step 3: Verify button is disabled during loading",
+      "Step 4: Wait for completion",
+      "Step 5: Verify loading state disappears"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "E. Error Handling - Timeout doesn't hang UI indefinitely",
+    "steps": [
+      "Step 1: Simulate slow response (if possible)",
+      "Step 2: Verify loading state appears",
+      "Step 3: After reasonable timeout, verify error appears",
+      "Step 4: Verify UI is still responsive"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "E. Error Handling - Form submission error keeps user data in form",
+    "steps": [
+      "Step 1: Fill out settings form with new values",
+      "Step 2: Trigger a submission error (invalid data)",
+      "Step 3: Verify error message appears",
+      "Step 4: Verify form still contains user's entered data",
+      "Step 5: Verify user can correct and resubmit"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "E. Error Handling - Duplicate watchlist entry shows clear error",
+    "steps": [
+      "Step 1: Add stock 'AAPL' to watchlist",
+      "Step 2: Try to add 'AAPL' again",
+      "Step 3: Verify error message about duplicate",
+      "Step 4: Verify original entry is unaffected"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "E. Error Handling - Missing data handled for new IPO stocks",
+    "steps": [
+      "Step 1: Try to analyze a very recent IPO stock",
+      "Step 2: If historical data is limited, verify graceful handling",
+      "Step 3: Verify message about limited data",
+      "Step 4: Verify partial analysis still provided if possible"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "E. Error Handling - Rate limit detection and notification",
+    "steps": [
+      "Step 1: Trigger many requests rapidly",
+      "Step 2: If rate limited, verify clear message to user",
+      "Step 3: Verify suggestion to wait before retrying",
+      "Step 4: Verify application doesn't crash"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "E. Error Handling - yfinance unavailable shows helpful message",
+    "steps": [
+      "Step 1: Simulate yfinance API unavailable",
+      "Step 2: Try to analyze a stock",
+      "Step 3: Verify error message about data source",
+      "Step 4: Verify suggestion to try again later"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "E. Error Handling - Invalid analysis ID in URL handled",
+    "steps": [
+      "Step 1: Navigate to /analysis/99999999 (non-existent ID)",
+      "Step 2: Verify 'Analysis not found' message",
+      "Step 3: Verify navigation to other pages works"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "E. Error Handling - Error logging works for debugging",
+    "steps": [
+      "Step 1: Trigger an error condition",
+      "Step 2: Check error log file",
+      "Step 3: Verify error is logged with timestamp and details",
+      "Step 4: Verify no sensitive data in logs"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "F. UI-Backend Integration - API request format matches backend expectations",
+    "steps": [
+      "Step 1: Open browser developer tools network tab",
+      "Step 2: Add a stock to watchlist",
+      "Step 3: Verify POST request has correct format",
+      "Step 4: Verify response is parsed correctly",
+      "Step 5: Verify UI updates with response data"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "F. UI-Backend Integration - Dropdown options populated from database",
+    "steps": [
+      "Step 1: Create analyses for stocks AAPL, MSFT, GOOGL",
+      "Step 2: Go to history page ticker filter dropdown",
+      "Step 3: Verify dropdown contains AAPL, MSFT, GOOGL",
+      "Step 4: Verify options are not hardcoded"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "F. UI-Backend Integration - Watchlist changes reflect immediately",
+    "steps": [
+      "Step 1: Open dashboard in two browser tabs",
+      "Step 2: Add stock in first tab",
+      "Step 3: Refresh second tab",
+      "Step 4: Verify stock appears in second tab"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "F. UI-Backend Integration - Filter changes trigger correct API calls",
+    "steps": [
+      "Step 1: Open network tab in browser dev tools",
+      "Step 2: Go to history page",
+      "Step 3: Apply ticker filter",
+      "Step 4: Verify API call includes filter parameter",
+      "Step 5: Verify response matches filter"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "F. UI-Backend Integration - Sort functionality sorts real data correctly",
+    "steps": [
+      "Step 1: Create analyses on different dates",
+      "Step 2: Go to history page",
+      "Step 3: Click sort by date ascending",
+      "Step 4: Verify oldest first",
+      "Step 5: Click sort descending",
+      "Step 6: Verify newest first"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "F. UI-Backend Integration - Pagination returns correct page of data",
+    "steps": [
+      "Step 1: Create 25 analyses",
+      "Step 2: Go to history page (10 per page)",
+      "Step 3: Verify page 1 shows first 10",
+      "Step 4: Go to page 2",
+      "Step 5: Verify page 2 shows next 10",
+      "Step 6: Verify page 3 shows remaining 5"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "F. UI-Backend Integration - API error responses displayed correctly",
+    "steps": [
+      "Step 1: Trigger an API error (invalid request)",
+      "Step 2: Verify error response is caught",
+      "Step 3: Verify error message displayed to user",
+      "Step 4: Verify UI doesn't break"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "F. UI-Backend Integration - Loading spinners appear during API calls",
+    "steps": [
+      "Step 1: Trigger a slow operation (analysis)",
+      "Step 2: Verify loading spinner appears immediately",
+      "Step 3: Verify spinner remains during processing",
+      "Step 4: Verify spinner disappears on completion"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "F. UI-Backend Integration - Charts loaded from API, not static",
+    "steps": [
+      "Step 1: Analyze stock 'AAPL'",
+      "Step 2: Check network tab for chart requests",
+      "Step 3: Verify charts are fetched/generated from API",
+      "Step 4: Verify not static placeholder images"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "F. UI-Backend Integration - Settings form submits to correct endpoint",
+    "steps": [
+      "Step 1: Open network tab",
+      "Step 2: Change settings and save",
+      "Step 3: Verify PUT /api/settings request is made",
+      "Step 4: Verify request body contains all fields",
+      "Step 5: Verify response is 200 OK"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "F. UI-Backend Integration - Background task status polling works",
+    "steps": [
+      "Step 1: Trigger 'Analyze All'",
+      "Step 2: Observe network tab",
+      "Step 3: Verify status polling requests",
+      "Step 4: Verify UI updates with task progress",
+      "Step 5: Verify polling stops when complete"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "F. UI-Backend Integration - Cache refresh triggers new API calls",
+    "steps": [
+      "Step 1: Analyze a stock (data cached)",
+      "Step 2: Click 'Refresh Data'",
+      "Step 3: Verify new API calls are made",
+      "Step 4: Verify fresh data is returned"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "F. UI-Backend Integration - Delete request removes item from backend",
+    "steps": [
+      "Step 1: Add stock to watchlist",
+      "Step 2: Click delete and confirm",
+      "Step 3: Verify DELETE API call made",
+      "Step 4: Query database directly",
+      "Step 5: Verify record is deleted"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "F. UI-Backend Integration - Analysis style parameter sent to backend",
+    "steps": [
+      "Step 1: Open network tab",
+      "Step 2: Select 'Aggressive' analysis style",
+      "Step 3: Submit analysis",
+      "Step 4: Verify request includes style parameter",
+      "Step 5: Verify analysis uses selected style"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "F. UI-Backend Integration - Performance check creates new database record",
+    "steps": [
+      "Step 1: Trigger performance check for an analysis",
+      "Step 2: Query performance_checks table",
+      "Step 3: Verify new record created with correct data"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "F. UI-Backend Integration - Report download serves actual file",
+    "steps": [
+      "Step 1: Generate analysis with report",
+      "Step 2: Click download report",
+      "Step 3: Verify actual markdown file downloads",
+      "Step 4: Verify file content is correct"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "F. UI-Backend Integration - LLM response parsed correctly",
+    "steps": [
+      "Step 1: Analyze a stock",
+      "Step 2: Verify recommendation is extracted (Buy/Sell/Hold)",
+      "Step 3: Verify confidence level is displayed",
+      "Step 4: Verify reasoning is formatted correctly"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "F. UI-Backend Integration - News sentiment correctly displayed",
+    "steps": [
+      "Step 1: Analyze a stock with news",
+      "Step 2: View news section",
+      "Step 3: Verify sentiment labels match database records",
+      "Step 4: Verify colors match sentiment (green/red/yellow)"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "F. UI-Backend Integration - Date range filter sends correct parameters",
+    "steps": [
+      "Step 1: Open network tab",
+      "Step 2: Set date range filter on history page",
+      "Step 3: Verify API request includes start and end dates",
+      "Step 4: Verify response contains only matching records"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "F. UI-Backend Integration - Test API endpoint returns correct status",
+    "steps": [
+      "Step 1: Enter valid API key",
+      "Step 2: Click test connection",
+      "Step 3: Verify success response is shown",
+      "Step 4: Enter invalid API key",
+      "Step 5: Click test connection",
+      "Step 6: Verify failure response is shown"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "G. State & Persistence - Refresh page mid-form preserves analysis settings",
+    "steps": [
+      "Step 1: Go to analyze page",
+      "Step 2: Enter ticker and select style",
+      "Step 3: Refresh page before submitting",
+      "Step 4: Verify appropriate behavior (cleared or preserved)"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "G. State & Persistence - Browser back after form submit - no duplicate",
+    "steps": [
+      "Step 1: Submit an analysis successfully",
+      "Step 2: Click browser back button",
+      "Step 3: Verify no duplicate analysis created",
+      "Step 4: Verify appropriate behavior on back navigation"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "G. State & Persistence - Bookmarked page loads correctly on return",
+    "steps": [
+      "Step 1: Navigate to history page with filters applied",
+      "Step 2: Bookmark the page URL",
+      "Step 3: Close and reopen browser",
+      "Step 4: Open bookmarked URL",
+      "Step 5: Verify page loads with filters (if in URL)"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "G. State & Persistence - Application state after server restart",
+    "steps": [
+      "Step 1: Create watchlist items and analyses",
+      "Step 2: Restart the server",
+      "Step 3: Open the application",
+      "Step 4: Verify all data is still present"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "G. State & Persistence - Two browser tabs - changes sync on refresh",
+    "steps": [
+      "Step 1: Open dashboard in Tab 1 and Tab 2",
+      "Step 2: Add stock in Tab 1",
+      "Step 3: Refresh Tab 2",
+      "Step 4: Verify stock appears in Tab 2"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "G. State & Persistence - Unsaved settings warning (if implemented)",
+    "steps": [
+      "Step 1: Go to settings page",
+      "Step 2: Make changes without saving",
+      "Step 3: Try to navigate away",
+      "Step 4: Verify warning about unsaved changes (if implemented)",
+      "Step 5: Verify user can choose to stay or leave"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "G. State & Persistence - Cache persists across page navigations",
+    "steps": [
+      "Step 1: Analyze a stock (data is cached)",
+      "Step 2: Navigate to other pages",
+      "Step 3: Return to analyze same stock",
+      "Step 4: Verify cached data is used (faster load)"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "G. State & Persistence - Filter state persists when viewing detail",
+    "steps": [
+      "Step 1: Go to history page",
+      "Step 2: Apply ticker filter",
+      "Step 3: Click to view an analysis detail",
+      "Step 4: Click back to history",
+      "Step 5: Verify filter is still applied"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "G. State & Persistence - Selected page in pagination persists",
+    "steps": [
+      "Step 1: Go to history with many items",
+      "Step 2: Navigate to page 3",
+      "Step 3: View an analysis detail",
+      "Step 4: Return to history",
+      "Step 5: Verify page 3 is still selected"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "G. State & Persistence - Analysis style preference persists",
+    "steps": [
+      "Step 1: Set default analysis style in settings",
+      "Step 2: Go to analyze page",
+      "Step 3: Verify default style is pre-selected",
+      "Step 4: Refresh page",
+      "Step 5: Verify default style still selected"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "H. URL & Direct Access - Invalid ticker ID in URL handled gracefully",
+    "steps": [
+      "Step 1: Navigate to /stock/INVALIDTICKER123",
+      "Step 2: Verify graceful error message",
+      "Step 3: Verify no crash",
+      "Step 4: Verify navigation still works"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "H. URL & Direct Access - Malformed URL parameters handled",
+    "steps": [
+      "Step 1: Navigate to /history?page=abc",
+      "Step 2: Verify graceful handling (default to page 1)",
+      "Step 3: Navigate to /history?page=-5",
+      "Step 4: Verify no crash, sensible fallback"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "H. URL & Direct Access - Very long URL handled correctly",
+    "steps": [
+      "Step 1: Create URL with very long query string",
+      "Step 2: Navigate to it",
+      "Step 3: Verify application handles it (truncate or error)",
+      "Step 4: Verify no crash"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "H. URL & Direct Access - SQL injection in URL rejected",
+    "steps": [
+      "Step 1: Navigate to /stock/AAPL' OR '1'='1",
+      "Step 2: Verify input is rejected/sanitized",
+      "Step 3: Verify no database manipulation",
+      "Step 4: Verify error message"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "H. URL & Direct Access - Deep link to deleted entity shows 'not found'",
+    "steps": [
+      "Step 1: Create an analysis",
+      "Step 2: Note the analysis URL",
+      "Step 3: Delete the analysis (or stock)",
+      "Step 4: Navigate to saved URL",
+      "Step 5: Verify 'not found' message, no crash"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "H. URL & Direct Access - Query parameters for filters reflected in UI",
+    "steps": [
+      "Step 1: Navigate to /history?ticker=AAPL",
+      "Step 2: Verify ticker filter dropdown shows AAPL",
+      "Step 3: Verify table shows only AAPL analyses"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "H. URL & Direct Access - Sharing URL with filters preserves filters",
+    "steps": [
+      "Step 1: Apply filters on history page",
+      "Step 2: Copy the URL",
+      "Step 3: Open URL in new browser/tab",
+      "Step 4: Verify same filters are applied"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "H. URL & Direct Access - Direct API endpoint access returns JSON",
+    "steps": [
+      "Step 1: Navigate directly to /api/watchlist in browser",
+      "Step 2: Verify JSON response (not HTML page)",
+      "Step 3: Verify proper content-type header"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "H. URL & Direct Access - XSS attempt in URL is sanitized",
+    "steps": [
+      "Step 1: Navigate to URL with script tag in parameter",
+      "Step 2: Verify script doesn't execute",
+      "Step 3: Verify input is sanitized/escaped"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "H. URL & Direct Access - Analysis ID as non-integer handled",
+    "steps": [
+      "Step 1: Navigate to /analysis/not-a-number",
+      "Step 2: Verify graceful error handling",
+      "Step 3: Verify appropriate error message"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "I. Double-Action & Idempotency - Double-click submit creates only one record",
+    "steps": [
+      "Step 1: Go to add stock input",
+      "Step 2: Enter ticker 'AAPL'",
+      "Step 3: Double-click Add button rapidly",
+      "Step 4: Verify only one stock entry created",
+      "Step 5: Check database for duplicates"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "I. Double-Action & Idempotency - Rapid delete clicks cause single deletion",
+    "steps": [
+      "Step 1: Add a stock to watchlist",
+      "Step 2: Click delete rapidly multiple times",
+      "Step 3: Confirm deletion once",
+      "Step 4: Verify only one deletion occurs",
+      "Step 5: Verify no errors from multiple requests"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "I. Double-Action & Idempotency - Submit button disabled during processing",
+    "steps": [
+      "Step 1: Click analyze button",
+      "Step 2: Immediately check button state",
+      "Step 3: Verify button is disabled",
+      "Step 4: Verify cannot click again",
+      "Step 5: After completion, verify button re-enabled"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "I. Double-Action & Idempotency - Multiple rapid navigation clicks don't break app",
+    "steps": [
+      "Step 1: Rapidly click between nav items",
+      "Step 2: Click Dashboard, Analyze, History quickly",
+      "Step 3: Verify final destination is correct",
+      "Step 4: Verify no errors or broken state"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "I. Double-Action & Idempotency - Refresh during save doesn't corrupt data",
+    "steps": [
+      "Step 1: Start a save operation (settings)",
+      "Step 2: Quickly refresh the page",
+      "Step 3: Check data state",
+      "Step 4: Verify no corruption (either saved or not)"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "I. Double-Action & Idempotency - Double 'Analyze All' doesn't duplicate work",
+    "steps": [
+      "Step 1: Click 'Analyze All' button",
+      "Step 2: Quickly click again",
+      "Step 3: Verify only one batch job started",
+      "Step 4: Verify stocks not analyzed twice"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "I. Double-Action & Idempotency - Back button after submit doesn't resubmit",
+    "steps": [
+      "Step 1: Submit analysis form",
+      "Step 2: After success, click back button",
+      "Step 3: Verify form is shown (not resubmission)",
+      "Step 4: Verify no duplicate analysis created"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "I. Double-Action & Idempotency - Multiple Test API clicks don't cause issues",
+    "steps": [
+      "Step 1: Click 'Test API Connection' rapidly",
+      "Step 2: Verify multiple simultaneous tests handled",
+      "Step 3: Verify single result displayed"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "J. Data Cleanup & Cascade - Delete stock removes from watchlist",
+    "steps": [
+      "Step 1: Add stock 'AAPL' to watchlist",
+      "Step 2: Delete stock from watchlist",
+      "Step 3: Verify removed from watchlist table",
+      "Step 4: Verify removed from database watchlist table"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "J. Data Cleanup & Cascade - Delete removes from search results immediately",
+    "steps": [
+      "Step 1: Add and analyze stock",
+      "Step 2: Go to history and search for it",
+      "Step 3: Delete the stock from watchlist",
+      "Step 4: Refresh search",
+      "Step 5: Verify analysis history still exists but stock removed from watchlist"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "J. Data Cleanup & Cascade - Watchlist count updates after delete",
+    "steps": [
+      "Step 1: Note watchlist count (e.g., 5)",
+      "Step 2: Delete a stock",
+      "Step 3: Verify count updates to 4 immediately"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "J. Data Cleanup & Cascade - Ticker filter dropdown updates after changes",
+    "steps": [
+      "Step 1: Analyze stocks AAPL, MSFT, GOOGL",
+      "Step 2: Go to history and check ticker filter",
+      "Step 3: Verify all three appear in dropdown",
+      "Step 4: If analyses can be deleted, delete GOOGL analysis",
+      "Step 5: Verify GOOGL removed from dropdown (if no other GOOGL analyses)"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "J. Data Cleanup & Cascade - Cached views refresh after data changes",
+    "steps": [
+      "Step 1: View history page",
+      "Step 2: Open new tab and add new analysis",
+      "Step 3: Return to original tab and refresh",
+      "Step 4: Verify new analysis appears"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "J. Data Cleanup & Cascade - Cache cleanup removes expired data",
+    "steps": [
+      "Step 1: Configure short cache duration",
+      "Step 2: Fetch stock data",
+      "Step 3: Wait for cache to expire",
+      "Step 4: Trigger cache cleanup",
+      "Step 5: Verify expired cache records removed"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "J. Data Cleanup & Cascade - Performance checks deleted with analysis (if applicable)",
+    "steps": [
+      "Step 1: Create analysis",
+      "Step 2: Create performance check for it",
+      "Step 3: Delete analysis (if feature exists)",
+      "Step 4: Verify related performance checks handled"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "J. Data Cleanup & Cascade - Report files cleaned up appropriately",
+    "steps": [
+      "Step 1: Generate analysis with report file",
+      "Step 2: Note file path",
+      "Step 3: If analysis/report can be deleted",
+      "Step 4: Verify file is also removed"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "J. Data Cleanup & Cascade - Stock data cleanup removes related news",
+    "steps": [
+      "Step 1: Fetch data for stock (creates news records)",
+      "Step 2: If stock data can be purged/deleted",
+      "Step 3: Verify related news records handled"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "J. Data Cleanup & Cascade - Chart images deleted with analysis (if applicable)",
+    "steps": [
+      "Step 1: Generate analysis with chart images",
+      "Step 2: Note chart file paths",
+      "Step 3: If analysis can be deleted",
+      "Step 4: Verify chart files are also removed"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "K. Default & Reset - New analysis form shows correct defaults",
+    "steps": [
+      "Step 1: Navigate to analyze page",
+      "Step 2: Verify ticker field is empty",
+      "Step 3: Verify analysis style matches default in settings",
+      "Step 4: Verify analyze button is enabled"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "K. Default & Reset - Settings page shows current values",
+    "steps": [
+      "Step 1: Configure settings",
+      "Step 2: Navigate away and back to settings",
+      "Step 3: Verify current saved values are displayed",
+      "Step 4: Verify not empty or wrong defaults"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "K. Default & Reset - Reset settings restores all to defaults",
+    "steps": [
+      "Step 1: Change all settings from defaults",
+      "Step 2: Save changes",
+      "Step 3: Click 'Reset to Defaults'",
+      "Step 4: Verify cache duration is default",
+      "Step 5: Verify analysis style is default",
+      "Step 6: Verify LLM settings are default"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "K. Default & Reset - Clear filters resets all filters to default",
+    "steps": [
+      "Step 1: Go to history page",
+      "Step 2: Apply multiple filters (date, ticker)",
+      "Step 3: Click 'Clear Filters' button",
+      "Step 4: Verify all filters reset",
+      "Step 5: Verify all results shown"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "K. Default & Reset - Pagination resets to page 1 when filters change",
+    "steps": [
+      "Step 1: Go to history page with many items",
+      "Step 2: Navigate to page 3",
+      "Step 3: Apply a new filter",
+      "Step 4: Verify pagination resets to page 1"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "K. Default & Reset - Cache duration default is sensible",
+    "steps": [
+      "Step 1: Check default cache duration",
+      "Step 2: Verify it's a reasonable value (e.g., 1 hour)",
+      "Step 3: Verify not 0 or unreasonably long"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "K. Default & Reset - Sort resets when changing views (if applicable)",
+    "steps": [
+      "Step 1: Sort history by ticker",
+      "Step 2: Navigate to dashboard",
+      "Step 3: Return to history",
+      "Step 4: Verify sort is at default (date descending)"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "K. Default & Reset - Analysis style dropdown default matches settings",
+    "steps": [
+      "Step 1: Set default style to 'Aggressive' in settings",
+      "Step 2: Go to analyze page",
+      "Step 3: Verify 'Aggressive' is pre-selected",
+      "Step 4: Change default to 'Conservative'",
+      "Step 5: Refresh analyze page",
+      "Step 6: Verify 'Conservative' is pre-selected"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "L. Search & Filter Edge Cases - Empty search shows all results",
+    "steps": [
+      "Step 1: Go to history with several analyses",
+      "Step 2: Ensure no filters applied",
+      "Step 3: Verify all analyses are shown"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "L. Search & Filter Edge Cases - Search with only spaces handled correctly",
+    "steps": [
+      "Step 1: Enter '   ' (spaces only) in ticker field",
+      "Step 2: Try to add to watchlist",
+      "Step 3: Verify validation error or spaces trimmed"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "L. Search & Filter Edge Cases - Special characters in ticker handled",
+    "steps": [
+      "Step 1: Enter '!@#$%' in ticker field",
+      "Step 2: Try to analyze",
+      "Step 3: Verify validation error, no crash"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "L. Search & Filter Edge Cases - Very long ticker string handled",
+    "steps": [
+      "Step 1: Enter very long string (100+ chars) in ticker",
+      "Step 2: Try to analyze",
+      "Step 3: Verify handled gracefully (truncate or reject)"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "L. Search & Filter Edge Cases - Filter combinations with zero results",
+    "steps": [
+      "Step 1: Apply date range with no analyses",
+      "Step 2: Verify 'No results' message shown",
+      "Step 3: Verify clear filters option available"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "L. Search & Filter Edge Cases - Filter + sort + pagination together",
+    "steps": [
+      "Step 1: Create 25 analyses for AAPL and 25 for MSFT",
+      "Step 2: Filter by AAPL",
+      "Step 3: Sort by date ascending",
+      "Step 4: Go to page 2",
+      "Step 5: Verify correct 10 AAPL items shown in correct order"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "L. Search & Filter Edge Cases - Filter persists after viewing detail and returning",
+    "steps": [
+      "Step 1: Apply ticker filter",
+      "Step 2: Click on an analysis to view detail",
+      "Step 3: Navigate back to history",
+      "Step 4: Verify filter is still applied"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "L. Search & Filter Edge Cases - Clear individual filter works",
+    "steps": [
+      "Step 1: Apply date filter and ticker filter",
+      "Step 2: Clear only ticker filter",
+      "Step 3: Verify date filter still applied",
+      "Step 4: Verify ticker filter cleared"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "L. Search & Filter Edge Cases - Ticker search is case-insensitive",
+    "steps": [
+      "Step 1: Analyze 'AAPL'",
+      "Step 2: Filter by 'aapl' (lowercase)",
+      "Step 3: Verify AAPL results shown"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "L. Search & Filter Edge Cases - Date range with same start and end date",
+    "steps": [
+      "Step 1: Set date filter with same start and end",
+      "Step 2: Verify analyses from that single day shown",
+      "Step 3: Verify no error"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "L. Search & Filter Edge Cases - Invalid date range (end before start) handled",
+    "steps": [
+      "Step 1: Set end date before start date",
+      "Step 2: Verify validation error or automatic swap"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "L. Search & Filter Edge Cases - Future date in filter handled",
+    "steps": [
+      "Step 1: Set date filter with future date",
+      "Step 2: Verify no results (or appropriate handling)"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "M. Form Validation - Required ticker field empty shows error",
+    "steps": [
+      "Step 1: Go to analyze page",
+      "Step 2: Leave ticker empty",
+      "Step 3: Click analyze",
+      "Step 4: Verify error message near field",
+      "Step 5: Verify form not submitted"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "M. Form Validation - Ticker with invalid format rejected",
+    "steps": [
+      "Step 1: Enter '123' as ticker",
+      "Step 2: Click analyze",
+      "Step 3: Verify error about invalid ticker format"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "M. Form Validation - API key format validation",
+    "steps": [
+      "Step 1: Go to settings",
+      "Step 2: Enter very short API key",
+      "Step 3: Try to save",
+      "Step 4: Verify validation error"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "M. Form Validation - Error messages are specific",
+    "steps": [
+      "Step 1: Trigger various validation errors",
+      "Step 2: Verify each error message is specific",
+      "Step 3: Verify not just 'Invalid' but describes the issue"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "M. Form Validation - Errors clear when user fixes issue",
+    "steps": [
+      "Step 1: Trigger validation error on ticker",
+      "Step 2: Error message shows",
+      "Step 3: Enter valid ticker",
+      "Step 4: Verify error message clears"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "M. Form Validation - Server-side validation matches client-side",
+    "steps": [
+      "Step 1: Bypass client validation (dev tools)",
+      "Step 2: Submit invalid data",
+      "Step 3: Verify server also rejects",
+      "Step 4: Verify error displayed to user"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "M. Form Validation - Whitespace-only input rejected",
+    "steps": [
+      "Step 1: Enter '   ' in required field",
+      "Step 2: Submit form",
+      "Step 3: Verify validation rejects whitespace-only"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "M. Form Validation - Ticker max length enforced",
+    "steps": [
+      "Step 1: Enter very long ticker (20+ chars)",
+      "Step 2: Submit form",
+      "Step 3: Verify rejection or truncation"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "M. Form Validation - Cache duration must be valid option",
+    "steps": [
+      "Step 1: Inspect cache duration dropdown",
+      "Step 2: Verify only valid options available",
+      "Step 3: Try to submit with manipulated value",
+      "Step 4: Verify server rejects invalid option"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "M. Form Validation - Provider must be valid option",
+    "steps": [
+      "Step 1: Submit settings with invalid provider value",
+      "Step 2: Verify validation error"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "M. Form Validation - Analysis style must be valid option",
+    "steps": [
+      "Step 1: Submit analysis with invalid style",
+      "Step 2: Verify validation error"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "M. Form Validation - Multiple errors shown simultaneously",
+    "steps": [
+      "Step 1: Leave multiple required fields empty",
+      "Step 2: Submit form",
+      "Step 3: Verify all errors shown at once",
+      "Step 4: User can see all issues"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "M. Form Validation - Tab order works correctly on forms",
+    "steps": [
+      "Step 1: Go to settings form",
+      "Step 2: Press Tab to move through fields",
+      "Step 3: Verify logical tab order",
+      "Step 4: Verify all fields reachable"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "M. Form Validation - Enter key submits form (where appropriate)",
+    "steps": [
+      "Step 1: Go to add stock input",
+      "Step 2: Enter ticker",
+      "Step 3: Press Enter",
+      "Step 4: Verify form submits"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "M. Form Validation - Form focus on error field",
+    "steps": [
+      "Step 1: Trigger validation error",
+      "Step 2: Verify focus moves to error field",
+      "Step 3: User can immediately correct"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "N. Feedback & Notification - Success toast on stock added",
+    "steps": [
+      "Step 1: Add stock to watchlist successfully",
+      "Step 2: Verify success toast appears",
+      "Step 3: Verify message is specific (e.g., 'AAPL added')",
+      "Step 4: Verify toast auto-dismisses"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "N. Feedback & Notification - Error toast on failed operation",
+    "steps": [
+      "Step 1: Trigger an error (e.g., invalid ticker)",
+      "Step 2: Verify error toast appears",
+      "Step 3: Verify error message is helpful"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "N. Feedback & Notification - Loading spinner during analysis",
+    "steps": [
+      "Step 1: Click analyze button",
+      "Step 2: Verify spinner appears immediately",
+      "Step 3: Verify spinner remains during processing",
+      "Step 4: Verify spinner disappears on completion"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "N. Feedback & Notification - Button disabled during submission",
+    "steps": [
+      "Step 1: Click submit button",
+      "Step 2: Verify button becomes disabled",
+      "Step 3: Verify button text changes (e.g., 'Analyzing...')",
+      "Step 4: Verify button re-enables after completion"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "N. Feedback & Notification - Progress indicator for batch analysis",
+    "steps": [
+      "Step 1: Trigger 'Analyze All' with multiple stocks",
+      "Step 2: Verify progress indicator shows",
+      "Step 3: Verify progress updates as each stock completes",
+      "Step 4: Verify '3 of 5 complete' type messaging"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "N. Feedback & Notification - Toast disappears after timeout",
+    "steps": [
+      "Step 1: Trigger a success toast",
+      "Step 2: Wait without dismissing",
+      "Step 3: Verify toast auto-dismisses after ~5 seconds"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "N. Feedback & Notification - Multiple toasts don't overlap",
+    "steps": [
+      "Step 1: Trigger multiple actions quickly",
+      "Step 2: Verify toasts stack or queue properly",
+      "Step 3: Verify all messages visible"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "N. Feedback & Notification - Confirmation dialog before delete",
+    "steps": [
+      "Step 1: Click delete button",
+      "Step 2: Verify confirmation dialog appears",
+      "Step 3: Verify clear warning message",
+      "Step 4: Verify Cancel and Confirm options"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "N. Feedback & Notification - Background task completion notification",
+    "steps": [
+      "Step 1: Trigger background 'Analyze All'",
+      "Step 2: Navigate to different page",
+      "Step 3: Wait for completion",
+      "Step 4: Verify notification about completion"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "N. Feedback & Notification - Settings saved confirmation",
+    "steps": [
+      "Step 1: Save settings",
+      "Step 2: Verify success message appears",
+      "Step 3: Verify message is specific ('Settings saved')"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "O. Responsive & Layout - Desktop layout correct at 1920px width",
+    "steps": [
+      "Step 1: Set browser window to 1920px width",
+      "Step 2: Navigate to dashboard",
+      "Step 3: Verify sidebar visible",
+      "Step 4: Verify main content properly sized",
+      "Step 5: Verify no horizontal scroll"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "O. Responsive & Layout - Tablet layout correct at 768px width",
+    "steps": [
+      "Step 1: Set browser window to 768px width",
+      "Step 2: Navigate to dashboard",
+      "Step 3: Verify layout adapts appropriately",
+      "Step 4: Verify content is readable",
+      "Step 5: Verify navigation accessible"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "O. Responsive & Layout - Mobile layout correct at 375px width",
+    "steps": [
+      "Step 1: Set browser window to 375px width",
+      "Step 2: Navigate to dashboard",
+      "Step 3: Verify mobile-optimized layout",
+      "Step 4: Verify content is readable",
+      "Step 5: Verify navigation works (hamburger menu)"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "O. Responsive & Layout - No horizontal scroll on standard viewports",
+    "steps": [
+      "Step 1: Check 1920px viewport - no horizontal scroll",
+      "Step 2: Check 1366px viewport - no horizontal scroll",
+      "Step 3: Check 768px viewport - no horizontal scroll",
+      "Step 4: Check 375px viewport - no horizontal scroll"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "O. Responsive & Layout - Touch targets large enough on mobile (44px)",
+    "steps": [
+      "Step 1: View on mobile viewport",
+      "Step 2: Measure button sizes",
+      "Step 3: Verify minimum 44px x 44px touch targets"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "O. Responsive & Layout - Modal fits within viewport on mobile",
+    "steps": [
+      "Step 1: Set mobile viewport",
+      "Step 2: Open confirmation modal",
+      "Step 3: Verify modal fits without overflow",
+      "Step 4: Verify modal buttons accessible"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "O. Responsive & Layout - Long text truncates correctly",
+    "steps": [
+      "Step 1: Create analysis with long reasoning text",
+      "Step 2: View in table/list",
+      "Step 3: Verify text truncates with ellipsis",
+      "Step 4: Verify full text visible on hover/detail"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "O. Responsive & Layout - Tables scroll horizontally on mobile if needed",
+    "steps": [
+      "Step 1: View history table on mobile",
+      "Step 2: Verify horizontal scroll available if needed",
+      "Step 3: Verify can scroll to see all columns"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "O. Responsive & Layout - Navigation collapses on mobile",
+    "steps": [
+      "Step 1: View on mobile viewport",
+      "Step 2: Verify sidebar collapses to hamburger menu",
+      "Step 3: Click hamburger to open menu",
+      "Step 4: Verify menu items accessible"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "O. Responsive & Layout - Charts resize appropriately",
+    "steps": [
+      "Step 1: View analysis page on desktop",
+      "Step 2: View same page on tablet",
+      "Step 3: View on mobile",
+      "Step 4: Verify charts resize and remain readable"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "P. Accessibility - Tab navigation through all interactive elements",
+    "steps": [
+      "Step 1: Start at top of page",
+      "Step 2: Press Tab key repeatedly",
+      "Step 3: Verify all buttons, links, inputs are reachable",
+      "Step 4: Verify logical tab order"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "P. Accessibility - Focus ring visible on all focused elements",
+    "steps": [
+      "Step 1: Tab through elements",
+      "Step 2: Verify visible focus ring on each",
+      "Step 3: Verify focus ring has sufficient contrast"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "P. Accessibility - ARIA labels on icon-only buttons",
+    "steps": [
+      "Step 1: Identify icon-only buttons (delete, edit, etc.)",
+      "Step 2: Inspect for aria-label attribute",
+      "Step 3: Verify labels are descriptive"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "P. Accessibility - Color contrast meets WCAG AA (4.5:1 for text)",
+    "steps": [
+      "Step 1: Use contrast checker tool",
+      "Step 2: Check main text against background",
+      "Step 3: Check button text against button background",
+      "Step 4: Verify 4.5:1 ratio minimum"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "P. Accessibility - No information conveyed by color alone",
+    "steps": [
+      "Step 1: View Buy/Sell/Hold indicators",
+      "Step 2: Verify text label or icon accompanies color",
+      "Step 3: View performance (profit/loss) indicators",
+      "Step 4: Verify not relying solely on color"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "P. Accessibility - Form fields have associated labels",
+    "steps": [
+      "Step 1: Inspect all form inputs",
+      "Step 2: Verify each has <label> element",
+      "Step 3: Verify label for matches input id"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "P. Accessibility - Error messages announced to screen readers",
+    "steps": [
+      "Step 1: Trigger form validation error",
+      "Step 2: Verify error has role='alert' or aria-live",
+      "Step 3: Verify error associated with input"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "P. Accessibility - Page has correct heading hierarchy",
+    "steps": [
+      "Step 1: Check page headings",
+      "Step 2: Verify h1 exists and is unique",
+      "Step 3: Verify logical h2, h3 structure",
+      "Step 4: Verify no skipped heading levels"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "P. Accessibility - Interactive elements are keyboard operable",
+    "steps": [
+      "Step 1: Use only keyboard to add stock",
+      "Step 2: Use only keyboard to navigate",
+      "Step 3: Use only keyboard to trigger analysis",
+      "Step 4: Verify all main actions possible"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "P. Accessibility - Modal can be closed with Escape key",
+    "steps": [
+      "Step 1: Open confirmation modal",
+      "Step 2: Press Escape key",
+      "Step 3: Verify modal closes",
+      "Step 4: Verify focus returns to trigger element"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Q. Temporal & Timezone - Dates display in consistent format",
+    "steps": [
+      "Step 1: Create analysis",
+      "Step 2: View date in various places (table, detail)",
+      "Step 3: Verify consistent date format throughout"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Q. Temporal & Timezone - Created/updated timestamps are accurate",
+    "steps": [
+      "Step 1: Note current time",
+      "Step 2: Create a record",
+      "Step 3: Verify created_at is close to current time",
+      "Step 4: Update record",
+      "Step 5: Verify updated_at reflects update time"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Q. Temporal & Timezone - Date picker prevents invalid date selection",
+    "steps": [
+      "Step 1: Open date range picker",
+      "Step 2: Verify cannot select invalid dates",
+      "Step 3: Verify sensible defaults"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Q. Temporal & Timezone - 'Last analyzed' shows relative time",
+    "steps": [
+      "Step 1: Analyze a stock",
+      "Step 2: View 'Last Analyzed' column",
+      "Step 3: Verify shows relative time (e.g., '5 minutes ago')",
+      "Step 4: Wait and verify it updates"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Q. Temporal & Timezone - Market status correct for current time",
+    "steps": [
+      "Step 1: Check current time vs US market hours",
+      "Step 2: View market status indicator",
+      "Step 3: Verify correctly shows Open/Closed"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Q. Temporal & Timezone - Cache expiration calculated correctly",
+    "steps": [
+      "Step 1: Note current time",
+      "Step 2: Fetch data (creates cache)",
+      "Step 3: Check cache_expires_at",
+      "Step 4: Verify equals current_time + cache_duration"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Q. Temporal & Timezone - Date sorting works correctly across months",
+    "steps": [
+      "Step 1: Create analyses in different months",
+      "Step 2: Sort by date",
+      "Step 3: Verify Dec > Nov > Oct etc."
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Q. Temporal & Timezone - Performance period calculations accurate",
+    "steps": [
+      "Step 1: Create analysis with known date",
+      "Step 2: Check performance after 30 days",
+      "Step 3: Verify '1 month' period is correctly identified"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "R. Concurrency & Race Conditions - Concurrent add operations handled",
+    "steps": [
+      "Step 1: Open two browser tabs",
+      "Step 2: Add same stock in both simultaneously",
+      "Step 3: Verify one succeeds, one shows duplicate error",
+      "Step 4: Verify only one entry in database"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "R. Concurrency & Race Conditions - Rapid navigation doesn't show stale data",
+    "steps": [
+      "Step 1: Navigate rapidly between pages",
+      "Step 2: Verify each page shows its correct data",
+      "Step 3: Verify no data from previous page bleeding through"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "R. Concurrency & Race Conditions - API response after navigation doesn't crash",
+    "steps": [
+      "Step 1: Start a slow operation (analysis)",
+      "Step 2: Navigate away before completion",
+      "Step 3: Verify no crash when response arrives",
+      "Step 4: Verify no unexpected behavior"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "R. Concurrency & Race Conditions - Concurrent analyses don't interfere",
+    "steps": [
+      "Step 1: Trigger analysis for AAPL",
+      "Step 2: Quickly trigger analysis for MSFT in new tab",
+      "Step 3: Verify both complete correctly",
+      "Step 4: Verify data not mixed up"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "R. Concurrency & Race Conditions - Delete during view handled gracefully",
+    "steps": [
+      "Step 1: Open analysis detail in Tab 1",
+      "Step 2: Delete the stock in Tab 2",
+      "Step 3: Try to interact in Tab 1",
+      "Step 4: Verify graceful error handling"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "R. Concurrency & Race Conditions - Settings save race condition handled",
+    "steps": [
+      "Step 1: Open settings in two tabs",
+      "Step 2: Change different settings in each",
+      "Step 3: Save both simultaneously",
+      "Step 4: Verify no corruption (last save wins)"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "R. Concurrency & Race Conditions - Background task queue ordering",
+    "steps": [
+      "Step 1: Queue multiple background tasks",
+      "Step 2: Verify tasks execute in order",
+      "Step 3: Verify no race conditions in queue"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "R. Concurrency & Race Conditions - Cache invalidation during fetch",
+    "steps": [
+      "Step 1: Start data fetch",
+      "Step 2: Clear cache simultaneously",
+      "Step 3: Verify no corruption",
+      "Step 4: Verify fresh data stored correctly"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "S. Export/Import - Export watchlist to CSV",
+    "steps": [
+      "Step 1: Add several stocks to watchlist",
+      "Step 2: Click export button (if available)",
+      "Step 3: Verify CSV file downloads",
+      "Step 4: Verify all stocks in file"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "S. Export/Import - Export analysis history",
+    "steps": [
+      "Step 1: Create several analyses",
+      "Step 2: Export to CSV",
+      "Step 3: Verify all analyses in file",
+      "Step 4: Verify data matches UI"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "S. Export/Import - Export filtered data only",
+    "steps": [
+      "Step 1: Apply filter to history",
+      "Step 2: Export to CSV",
+      "Step 3: Verify only filtered records exported"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "S. Export/Import - Download markdown report",
+    "steps": [
+      "Step 1: Generate analysis",
+      "Step 2: Click download report",
+      "Step 3: Verify markdown file downloads",
+      "Step 4: Verify content is complete"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "S. Export/Import - Report contains embedded charts",
+    "steps": [
+      "Step 1: Generate analysis with charts",
+      "Step 2: Download report",
+      "Step 3: Verify chart images are embedded or linked"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "S. Export/Import - CSV encoding handles special characters",
+    "steps": [
+      "Step 1: Create data with special characters if possible",
+      "Step 2: Export to CSV",
+      "Step 3: Verify proper encoding (UTF-8)"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "T. Performance - Dashboard loads in under 3 seconds with 100 records",
+    "steps": [
+      "Step 1: Add 100 stocks to watchlist",
+      "Step 2: Clear browser cache",
+      "Step 3: Time page load",
+      "Step 4: Verify loads in under 3 seconds"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "T. Performance - History page loads acceptably with 1000 analyses",
+    "steps": [
+      "Step 1: Create 1000 analysis records (test data)",
+      "Step 2: Load history page",
+      "Step 3: Verify loads in under 5 seconds",
+      "Step 4: Verify pagination works"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "T. Performance - Filter/search responds in under 1 second",
+    "steps": [
+      "Step 1: Load page with many records",
+      "Step 2: Apply filter",
+      "Step 3: Verify results appear in under 1 second"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "T. Performance - No console errors during normal operation",
+    "steps": [
+      "Step 1: Open browser console",
+      "Step 2: Perform common operations",
+      "Step 3: Verify no JavaScript errors in console"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "T. Performance - API responses have reasonable size",
+    "steps": [
+      "Step 1: Monitor network tab",
+      "Step 2: Load pages with data",
+      "Step 3: Verify responses aren't excessively large",
+      "Step 4: Verify pagination reduces payload size"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "Design System - Color palette follows specification",
+    "steps": [
+      "Step 1: Verify primary blue color (#3B82F6 or similar)",
+      "Step 2: Verify success/Buy is green (#10B981)",
+      "Step 3: Verify warning/Hold is yellow (#F59E0B)",
+      "Step 4: Verify danger/Sell is red (#EF4444)"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "Design System - Typography follows specification",
+    "steps": [
+      "Step 1: Verify font family is system or Inter/Poppins",
+      "Step 2: Verify headings are bold with correct sizes",
+      "Step 3: Verify body text is readable (1rem, line-height 1.5)",
+      "Step 4: Verify monospace for tickers and numbers"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "Design System - Cards have subtle shadows",
+    "steps": [
+      "Step 1: View content cards",
+      "Step 2: Verify subtle shadow styling",
+      "Step 3: Verify consistent card styling throughout"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "Design System - Buttons have hover states",
+    "steps": [
+      "Step 1: Hover over primary button",
+      "Step 2: Verify color/state change",
+      "Step 3: Repeat for secondary buttons",
+      "Step 4: Verify consistent hover behavior"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "Design System - Input fields have focus states",
+    "steps": [
+      "Step 1: Focus on input field",
+      "Step 2: Verify border or outline change",
+      "Step 3: Verify focus is clearly visible"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "Design System - Tables have striped rows",
+    "steps": [
+      "Step 1: View table with multiple rows",
+      "Step 2: Verify alternating row colors",
+      "Step 3: Verify hover highlights on rows"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "Design System - Consistent spacing throughout",
+    "steps": [
+      "Step 1: Check padding in cards",
+      "Step 2: Check margin between elements",
+      "Step 3: Verify consistent spacing pattern",
+      "Step 4: Verify proper alignment"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "Design System - Charts are visually appealing",
+    "steps": [
+      "Step 1: View generated charts",
+      "Step 2: Verify colors are appropriate",
+      "Step 3: Verify legends are clear",
+      "Step 4: Verify axes are labeled"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "Sidebar fixed position on scroll",
+    "steps": [
+      "Step 1: Scroll down main content",
+      "Step 2: Verify sidebar stays fixed",
+      "Step 3: Verify navigation always accessible"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "Header shows current time (if implemented)",
+    "steps": [
+      "Step 1: View header bar",
+      "Step 2: Verify current time displayed",
+      "Step 3: Verify time updates or is accurate"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "Footer shows data source attribution",
+    "steps": [
+      "Step 1: View footer",
+      "Step 2: Verify yfinance or data source credited",
+      "Step 3: Verify last update timestamp shown"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "Empty state designs are thoughtful",
+    "steps": [
+      "Step 1: View empty watchlist",
+      "Step 2: Verify helpful message ('Add your first stock')",
+      "Step 3: Verify call to action button",
+      "Step 4: View empty history",
+      "Step 5: Verify similar helpful empty state"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "Recommendation colors are correct - Buy green",
+    "steps": [
+      "Step 1: Create analysis with Buy recommendation",
+      "Step 2: Verify Buy indicator is green",
+      "Step 3: Verify text 'Buy' is displayed"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "Recommendation colors are correct - Sell red",
+    "steps": [
+      "Step 1: View or create Sell recommendation",
+      "Step 2: Verify Sell indicator is red"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "Recommendation colors are correct - Hold yellow",
+    "steps": [
+      "Step 1: View or create Hold recommendation",
+      "Step 2: Verify Hold indicator is yellow/amber"
+    ],
+    "passes": false
+  }
+]

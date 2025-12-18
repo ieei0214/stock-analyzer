@@ -1,0 +1,738 @@
+<project_specification>
+  <project_name>Stock Analyzer</project_name>
+
+  <overview>
+    A Python-based multi-agent stock analysis system with a web dashboard interface. The system uses two specialized agents: a Data Collector that fetches comprehensive stock data (price history, financials, news, insider trading, analyst ratings) and stores it in SQLite, and an LLM-powered Investment Analyst that evaluates the data to provide Buy/Sell/Hold recommendations with detailed reasoning. Users access the system through a localhost web interface to manage watchlists, trigger analyses, view reports with embedded charts, and track historical recommendation performance.
+  </overview>
+
+  <technology_stack>
+    <frontend>
+      <framework>HTML/CSS/JavaScript with modern vanilla JS or lightweight framework (Alpine.js or HTMX)</framework>
+      <styling>Tailwind CSS or Bootstrap for responsive design</styling>
+      <charts>Chart.js or Plotly.js for interactive visualizations</charts>
+    </frontend>
+    <backend>
+      <runtime>Python 3.10+</runtime>
+      <web_framework>FastAPI (async support for background tasks) or Flask</web_framework>
+      <database>SQLite with proper indexing</database>
+      <data_fetching>yfinance for stock data</data_fetching>
+      <llm_integration>OpenAI API and Google Gemini API (configurable via .env)</llm_integration>
+      <charting>matplotlib or plotly for static chart generation</charting>
+      <task_queue>Background task processing for batch analyses</task_queue>
+    </backend>
+    <communication>
+      <api>REST API for frontend-backend communication</api>
+      <config>python-dotenv for environment variable management</config>
+    </communication>
+  </technology_stack>
+
+  <prerequisites>
+    <environment_setup>
+      - Python 3.10 or higher installed
+      - pip package manager
+      - API key for OpenAI or Google Gemini
+      - Internet connection for fetching stock data
+      - Web browser (Chrome, Firefox, Safari, Edge)
+      - .env file with: LLM_PROVIDER, API_KEY, MODEL_NAME
+      - Virtual environment recommended for dependency isolation
+    </environment_setup>
+  </prerequisites>
+
+  <security_and_access_control>
+    <complexity_tier>Medium</complexity_tier>
+    <test_count_target>250+</test_count_target>
+    <user_roles>
+      <role name="local_user">
+        <permissions>
+          - Full access to all features (single-user system)
+          - Can manage watchlist (add/remove stocks)
+          - Can trigger stock analyses
+          - Can view all reports and historical data
+          - Can modify settings (API keys, analysis style, cache duration)
+          - Can manually trigger historical performance checks
+        </permissions>
+        <protected_routes>
+          - No authentication required (localhost-only, trusted environment)
+          - All routes accessible without login
+        </protected_routes>
+      </role>
+    </user_roles>
+    <authentication>
+      <method>None (localhost-only deployment, single-user)</method>
+      <session_timeout>N/A</session_timeout>
+      <password_requirements>N/A</password_requirements>
+    </authentication>
+    <sensitive_operations>
+      - API key storage in .env file (not in database)
+      - Validation of stock tickers before processing
+      - Error handling for invalid API keys or rate limits
+      - Input sanitization for ticker symbols
+    </sensitive_operations>
+  </security_and_access_control>
+
+  <core_features>
+    <agent_system>
+      - Multi-agent architecture with two specialized agents
+      - Agent 1: Data Collector (fetches and stores stock data)
+      - Agent 2: Investment Analyst (LLM-powered analysis and recommendations)
+      - Asynchronous agent execution for non-blocking operations
+      - Agent communication via shared SQLite database
+      - Error recovery and retry logic for agent failures
+    </agent_system>
+
+    <data_collection>
+      - Fetch historical price data (1 year) via yfinance
+      - Retrieve key financial metrics: P/E ratio, EPS, Revenue Growth
+      - Fetch dividend yield, debt-to-equity ratio, profit margins
+      - Get analyst ratings and price targets
+      - Collect insider trading activity
+      - Search and store recent news headlines with sentiment indicators
+      - Calculate technical indicators: 50-day MA, 200-day MA, RSI, MACD
+      - Store all raw data in SQLite with timestamps
+      - Data validation and error handling for missing/incomplete data
+    </data_collection>
+
+    <llm_analysis>
+      - Configurable LLM provider (OpenAI or Gemini via .env)
+      - System prompt for investment analysis with structured output
+      - Fundamental analysis: P/E vs industry average, revenue trends, debt levels
+      - Technical analysis: price trends, moving average crossovers, RSI/MACD signals
+      - Sentiment analysis: news headline sentiment aggregation
+      - Generate Buy/Sell/Hold recommendation with confidence level
+      - Provide bullet-point reasoning for recommendation
+      - Support for conservative vs aggressive analysis styles
+      - Fallback error handling for API failures or rate limits
+    </llm_analysis>
+
+    <web_dashboard>
+      - Home/Dashboard page with watchlist overview
+      - Display current price, % change, last recommendation for each watchlist stock
+      - Analyze Stock page with ticker input and configuration options
+      - Stock Detail page showing full analysis report with embedded charts
+      - History/Performance page for tracking past recommendations
+      - Settings page for API key management and preferences
+      - Responsive design for desktop and tablet viewing
+      - Real-time loading indicators for ongoing analyses
+      - Toast notifications for completed analyses and errors
+    </web_dashboard>
+
+    <watchlist_management>
+      - Add stocks to watchlist by ticker symbol
+      - Remove stocks from watchlist
+      - View all watchlist stocks on dashboard
+      - "Analyze All" button to trigger batch analysis of all watchlist stocks
+      - Background processing for batch analyses with progress tracking
+      - Persistent storage of watchlist in SQLite
+      - Display last analysis date for each watchlist stock
+    </watchlist_management>
+
+    <report_generation>
+      - Generate detailed markdown reports for each analysis
+      - Embed chart images directly in markdown files
+      - Charts: price history with MAs, volume, RSI, MACD, revenue/EPS trends
+      - Include all financial metrics in structured format
+      - Show news headlines with sentiment scores
+      - Display insider trading activity summary
+      - Highlight Buy/Sell/Hold recommendation prominently
+      - Save reports to organized directory structure: reports/TICKER/YYYY-MM-DD_analysis.md
+      - Link to reports from web UI for easy access
+    </report_generation>
+
+    <historical_tracking>
+      - Store all past analyses with timestamps in database
+      - Manual "Check Performance" trigger to evaluate past recommendations
+      - Calculate gain/loss from recommendation date to current/selected date
+      - Show performance metrics: 1 week, 1 month, 3 months, 6 months
+      - Display success rate statistics (% of Buy/Sell recommendations that were profitable)
+      - Historical view with filterable date ranges
+      - Compare recommendation price vs current price
+      - Visual indicators for profitable vs unprofitable recommendations
+    </historical_tracking>
+
+    <caching_system>
+      - Configurable cache duration in settings (1 hour, 6 hours, 12 hours, 1 day, until market close)
+      - Cache fetched stock data to reduce API calls and improve performance
+      - Timestamp-based cache validation
+      - Manual "Refresh Data" option to bypass cache
+      - Cache indicator in UI showing data freshness
+      - Automatic cache cleanup for expired data
+    </caching_system>
+
+    <settings_configuration>
+      - Edit API keys for OpenAI and Gemini
+      - Select active LLM provider (OpenAI or Gemini)
+      - Choose default analysis style (Conservative or Aggressive)
+      - Set cache duration preference
+      - Test API connection from settings page
+      - Save settings to .env file or database
+      - Reset to default settings option
+    </settings_configuration>
+
+    <error_handling>
+      - Graceful handling of invalid ticker symbols with user-friendly messages
+      - LLM API failure recovery with retry logic and fallback messages
+      - Network error handling with timeout configurations
+      - Missing data handling (e.g., no P/E ratio, limited history for new IPOs)
+      - Rate limit detection and user notification
+      - yfinance API errors with helpful suggestions
+      - Display error details in UI without exposing sensitive information
+      - Log errors to file for debugging
+    </error_handling>
+
+    <background_processing>
+      - Task queue for batch "Analyze All" operations
+      - Progress tracking UI for multi-stock analyses
+      - Parallel processing with rate limiting to avoid API throttling
+      - Notification system when background tasks complete
+      - Cancel/abort option for long-running analyses
+      - Queue status visibility in UI
+    </background_processing>
+  </core_features>
+
+  <database_schema>
+    <tables>
+      <stocks>
+        - ticker (TEXT, PRIMARY KEY)
+        - company_name (TEXT)
+        - sector (TEXT)
+        - industry (TEXT)
+        - created_at (TIMESTAMP)
+        - last_updated (TIMESTAMP)
+      </stocks>
+
+      <watchlist>
+        - id (INTEGER, PRIMARY KEY AUTOINCREMENT)
+        - ticker (TEXT, FOREIGN KEY to stocks.ticker)
+        - added_at (TIMESTAMP)
+      </watchlist>
+
+      <stock_data>
+        - id (INTEGER, PRIMARY KEY AUTOINCREMENT)
+        - ticker (TEXT, FOREIGN KEY to stocks.ticker)
+        - data_type (TEXT: 'price_history', 'fundamentals', 'technicals', 'news')
+        - data_json (TEXT: JSON blob of actual data)
+        - fetched_at (TIMESTAMP)
+        - cache_expires_at (TIMESTAMP)
+      </stock_data>
+
+      <analyses>
+        - id (INTEGER, PRIMARY KEY AUTOINCREMENT)
+        - ticker (TEXT, FOREIGN KEY to stocks.ticker)
+        - analysis_date (TIMESTAMP)
+        - recommendation (TEXT: 'Buy', 'Sell', 'Hold')
+        - confidence_level (TEXT: 'High', 'Medium', 'Low')
+        - reasoning (TEXT: bullet points)
+        - analysis_style (TEXT: 'Conservative', 'Aggressive')
+        - price_at_analysis (REAL)
+        - report_path (TEXT: path to markdown file)
+        - llm_provider (TEXT: 'openai', 'gemini')
+        - llm_model (TEXT: model name used)
+      </analyses>
+
+      <performance_checks>
+        - id (INTEGER, PRIMARY KEY AUTOINCREMENT)
+        - analysis_id (INTEGER, FOREIGN KEY to analyses.id)
+        - check_date (TIMESTAMP)
+        - price_at_check (REAL)
+        - gain_loss_percent (REAL)
+        - time_period_days (INTEGER)
+        - outcome (TEXT: 'Profitable', 'Loss', 'Neutral')
+      </performance_checks>
+
+      <news_data>
+        - id (INTEGER, PRIMARY KEY AUTOINCREMENT)
+        - ticker (TEXT, FOREIGN KEY to stocks.ticker)
+        - headline (TEXT)
+        - source (TEXT)
+        - published_date (TIMESTAMP)
+        - sentiment (TEXT: 'Positive', 'Negative', 'Neutral')
+        - url (TEXT)
+        - fetched_at (TIMESTAMP)
+      </news_data>
+
+      <settings>
+        - key (TEXT, PRIMARY KEY)
+        - value (TEXT)
+        - updated_at (TIMESTAMP)
+      </settings>
+    </tables>
+  </database_schema>
+
+  <api_endpoints_summary>
+    <watchlist_endpoints>
+      - GET /api/watchlist (Get all watchlist stocks)
+      - POST /api/watchlist (Add stock to watchlist)
+      - DELETE /api/watchlist/{ticker} (Remove stock from watchlist)
+      - POST /api/watchlist/analyze-all (Trigger batch analysis)
+    </watchlist_endpoints>
+
+    <analysis_endpoints>
+      - POST /api/analyze/{ticker} (Trigger single stock analysis)
+      - GET /api/analysis/{ticker} (Get latest analysis for ticker)
+      - GET /api/analysis/{ticker}/history (Get all past analyses)
+      - GET /api/analysis/{analysis_id}/report (Get markdown report)
+    </analysis_endpoints>
+
+    <stock_data_endpoints>
+      - GET /api/stock/{ticker} (Get stock overview data)
+      - GET /api/stock/{ticker}/data (Get cached stock data)
+      - POST /api/stock/{ticker}/refresh (Force refresh cached data)
+      - GET /api/stock/{ticker}/charts (Get chart images)
+    </stock_data_endpoints>
+
+    <performance_endpoints>
+      - POST /api/performance/check/{analysis_id} (Trigger performance check)
+      - GET /api/performance/stats (Get overall performance statistics)
+      - GET /api/performance/history (Get all performance checks)
+    </performance_endpoints>
+
+    <settings_endpoints>
+      - GET /api/settings (Get all settings)
+      - PUT /api/settings (Update settings)
+      - POST /api/settings/test-api (Test LLM API connection)
+      - POST /api/settings/reset (Reset to defaults)
+    </settings_endpoints>
+
+    <background_task_endpoints>
+      - GET /api/tasks/{task_id}/status (Get task status)
+      - GET /api/tasks/active (Get all active tasks)
+      - POST /api/tasks/{task_id}/cancel (Cancel task)
+    </background_task_endpoints>
+  </api_endpoints_summary>
+
+  <ui_layout>
+    <main_structure>
+      - Sidebar navigation (fixed left): Dashboard, Analyze, History, Settings
+      - Main content area (right): Dynamic content based on selected page
+      - Top header bar: App title, current time, market status indicator
+      - Footer: Data source attribution, last update timestamp
+    </main_structure>
+
+    <dashboard_page>
+      - Page title: "My Watchlist"
+      - Add stock input at top (ticker symbol + Add button)
+      - Watchlist table: Ticker | Company | Price | Change % | Last Recommendation | Last Analyzed | Actions
+      - "Analyze All" button above table
+      - Empty state message when watchlist is empty
+      - Color-coded recommendations: Green (Buy), Red (Sell), Yellow (Hold)
+    </dashboard_page>
+
+    <analyze_page>
+      - Ticker input field with validation
+      - Analysis style selector (Conservative/Aggressive radio buttons)
+      - "Analyze" button
+      - Results area showing loading state or completed analysis
+      - Display recommendation prominently with reasoning
+      - Embedded charts carousel
+      - "Save to Watchlist" button
+      - "Download Report" link to markdown file
+    </analyze_page>
+
+    <history_page>
+      - Date range filter
+      - Ticker filter dropdown
+      - Analysis history table: Date | Ticker | Recommendation | Price Then | Price Now | Gain/Loss | Actions
+      - "Check Performance" button for each row
+      - Performance statistics summary card at top
+      - Sort by date, ticker, or performance
+    </history_page>
+
+    <settings_page>
+      - API Configuration section: Provider dropdown, API key input, model name input
+      - Test API Connection button with status indicator
+      - Analysis Preferences: Default style selector
+      - Cache Settings: Duration dropdown
+      - Save button, Reset to Defaults button
+      - Success/error toast messages
+    </settings_page>
+  </ui_layout>
+
+  <design_system>
+    <color_palette>
+      - Primary: Modern blue (#3B82F6 or similar)
+      - Success/Buy: Green (#10B981)
+      - Warning/Hold: Yellow/Amber (#F59E0B)
+      - Danger/Sell: Red (#EF4444)
+      - Background: Light gray (#F9FAFB) or white
+      - Text: Dark gray (#1F2937)
+      - Borders: Light gray (#E5E7EB)
+    </color_palette>
+
+    <typography>
+      - Font family: System font stack (SF Pro, Segoe UI, Roboto) or Inter/Poppins from Google Fonts
+      - Headings: Bold, larger sizes (h1: 2rem, h2: 1.5rem, h3: 1.25rem)
+      - Body text: Regular weight, 1rem, line-height 1.5
+      - Monospace for ticker symbols and numbers: Courier New or Consolas
+    </typography>
+
+    <components>
+      - Cards with subtle shadows for content sections
+      - Buttons: Solid primary color with hover states
+      - Input fields: Bordered with focus states
+      - Tables: Striped rows, hover highlights
+      - Loading spinners for async operations
+      - Toast notifications for success/error messages
+      - Modal dialogs for confirmations
+    </components>
+  </design_system>
+
+  <implementation_steps>
+    <step number="1">
+      <title>Project Setup and Environment Configuration</title>
+      <tasks>
+        - Initialize Python project with virtual environment
+        - Create requirements.txt with all dependencies
+        - Set up project directory structure (src/, reports/, data/, static/, templates/)
+        - Create .env.example file with required variables
+        - Initialize SQLite database with schema
+        - Set up logging configuration
+        - Create basic README with setup instructions
+      </tasks>
+    </step>
+
+    <step number="2">
+      <title>Database Layer and Models</title>
+      <tasks>
+        - Create database connection module with context manager
+        - Implement all table creation scripts with proper indexes
+        - Build data access layer (DAO) for each table
+        - Create database migration system for schema updates
+        - Write utility functions for common queries
+        - Add database seeding scripts for testing
+      </tasks>
+    </step>
+
+    <step number="3">
+      <title>Agent 1: Data Collector Implementation</title>
+      <tasks>
+        - Create data collector agent class
+        - Implement yfinance integration for price history
+        - Build financial metrics fetcher (P/E, EPS, revenue, dividends, debt ratios)
+        - Add technical indicators calculator (MA, RSI, MACD)
+        - Integrate news fetching (yfinance news or alternative API)
+        - Implement insider trading data collection
+        - Add analyst ratings fetcher
+        - Create data validation and cleaning functions
+        - Implement caching logic with expiration
+        - Build error handling and retry mechanisms
+        - Store all collected data in SQLite
+      </tasks>
+    </step>
+
+    <step number="4">
+      <title>Agent 2: LLM-Powered Investment Analyst</title>
+      <tasks>
+        - Create analyst agent class with LLM integration
+        - Implement OpenAI API client with error handling
+        - Implement Gemini API client with error handling
+        - Design system prompt for investment analysis
+        - Build prompt template with data injection
+        - Create response parser for structured recommendations
+        - Implement analysis style variations (conservative/aggressive)
+        - Add confidence level calculation
+        - Generate reasoning bullet points
+        - Store analysis results in database
+        - Handle LLM API failures with fallbacks
+      </tasks>
+    </step>
+
+    <step number="5">
+      <title>Chart Generation System</title>
+      <tasks>
+        - Set up matplotlib or plotly for chart creation
+        - Create price history chart with moving averages
+        - Build volume chart
+        - Implement RSI indicator chart
+        - Create MACD chart with signal lines
+        - Build fundamental trends charts (revenue, EPS over time)
+        - Generate chart images and save to reports directory
+        - Create chart embedding function for markdown
+        - Add chart styling for consistent look
+      </tasks>
+    </step>
+
+    <step number="6">
+      <title>Report Generation System</title>
+      <tasks>
+        - Create markdown report template
+        - Implement report generator that combines analysis + charts
+        - Build file organization system (reports/TICKER/DATE_analysis.md)
+        - Embed chart images in markdown
+        - Format financial data tables
+        - Add news headlines section
+        - Include recommendation prominently
+        - Create report metadata (date, ticker, style used)
+        - Implement report cleanup for old files
+      </tasks>
+    </step>
+
+    <step number="7">
+      <title>Backend API with FastAPI/Flask</title>
+      <tasks>
+        - Initialize FastAPI or Flask application
+        - Set up CORS for local development
+        - Create API router structure
+        - Implement all watchlist endpoints
+        - Build analysis endpoints
+        - Create stock data endpoints
+        - Implement performance tracking endpoints
+        - Add settings management endpoints
+        - Build background task endpoints
+        - Add request validation and error handling
+        - Implement rate limiting for API calls
+        - Create API documentation (Swagger/OpenAPI)
+      </tasks>
+    </step>
+
+    <step number="8">
+      <title>Background Task Processing System</title>
+      <tasks>
+        - Set up background task queue (FastAPI BackgroundTasks or Celery)
+        - Implement task status tracking
+        - Create batch analysis processor for "Analyze All"
+        - Add progress tracking mechanism
+        - Build task cancellation functionality
+        - Implement rate limiting for external API calls
+        - Add task result storage
+        - Create notification system for completed tasks
+      </tasks>
+    </step>
+
+    <step number="9">
+      <title>Frontend - Base Layout and Navigation</title>
+      <tasks>
+        - Create base HTML template with sidebar navigation
+        - Build responsive CSS layout (mobile-friendly)
+        - Implement navigation menu with active state
+        - Add header with app title and status indicators
+        - Create footer with attribution
+        - Set up CSS framework (Tailwind or Bootstrap)
+        - Implement color scheme and typography
+        - Add loading spinner component
+        - Create toast notification system
+      </tasks>
+    </step>
+
+    <step number="10">
+      <title>Frontend - Dashboard Page</title>
+      <tasks>
+        - Create dashboard HTML page
+        - Build add stock form with validation
+        - Implement watchlist table with sortable columns
+        - Add color-coded recommendation indicators
+        - Create "Analyze All" button with confirmation
+        - Build empty state UI
+        - Implement delete stock functionality
+        - Add last analyzed timestamp display
+        - Create click-to-analyze individual stock
+        - Connect to backend API endpoints
+      </tasks>
+    </step>
+
+    <step number="11">
+      <title>Frontend - Analyze Stock Page</title>
+      <tasks>
+        - Create analyze page HTML
+        - Build ticker input with autocomplete/validation
+        - Add analysis style selector (radio buttons)
+        - Implement analyze button with loading state
+        - Create results display area
+        - Build recommendation card with prominent styling
+        - Add reasoning bullet points display
+        - Implement chart carousel/gallery
+        - Create "Add to Watchlist" button
+        - Add download report link
+        - Connect to analysis API endpoints
+      </tasks>
+    </step>
+
+    <step number="12">
+      <title>Frontend - History and Performance Page</title>
+      <tasks>
+        - Create history page HTML
+        - Build date range filter component
+        - Add ticker filter dropdown
+        - Implement analysis history table with sorting
+        - Create "Check Performance" button for each row
+        - Build performance statistics summary card
+        - Add gain/loss visualization (color coding)
+        - Implement pagination for large history
+        - Create export to CSV functionality
+        - Connect to performance API endpoints
+      </tasks>
+    </step>
+
+    <step number="13">
+      <title>Frontend - Settings Page</title>
+      <tasks>
+        - Create settings page HTML
+        - Build API configuration form (provider, key, model)
+        - Add test API connection button with status display
+        - Implement analysis preferences selector
+        - Create cache settings dropdown
+        - Add save button with validation
+        - Build reset to defaults functionality
+        - Implement success/error notifications
+        - Create settings persistence
+        - Connect to settings API endpoints
+      </tasks>
+    </step>
+
+    <step number="14">
+      <title>JavaScript - API Integration and Interactivity</title>
+      <tasks>
+        - Create API client module for backend communication
+        - Implement fetch wrappers with error handling
+        - Build form submission handlers
+        - Add real-time updates for background tasks
+        - Implement WebSocket or polling for task progress
+        - Create chart loading and display logic
+        - Add client-side validation
+        - Build confirmation dialogs
+        - Implement toast notifications
+        - Add loading state management
+      </tasks>
+    </step>
+
+    <step number="15">
+      <title>Caching System Implementation</title>
+      <tasks>
+        - Create cache manager module
+        - Implement timestamp-based cache validation
+        - Build configurable cache duration logic
+        - Add "until market close" cache expiration
+        - Create cache cleanup scheduler
+        - Implement manual cache refresh
+        - Add cache status indicators in UI
+        - Build cache statistics tracking
+      </tasks>
+    </step>
+
+    <step number="16">
+      <title>Historical Performance Tracking</title>
+      <tasks>
+        - Create performance checker module
+        - Implement price comparison logic (then vs now)
+        - Calculate gain/loss percentages
+        - Build time period tracking (1w, 1m, 3m, 6m)
+        - Create success rate calculator
+        - Implement profitable vs unprofitable categorization
+        - Add performance visualization
+        - Store performance checks in database
+      </tasks>
+    </step>
+
+    <step number="17">
+      <title>Error Handling and Validation</title>
+      <tasks>
+        - Add ticker symbol validation
+        - Implement API key validation
+        - Create LLM API error handling with retries
+        - Build yfinance error handling
+        - Add network timeout handling
+        - Implement missing data fallbacks
+        - Create user-friendly error messages
+        - Add error logging system
+        - Build rate limit detection
+        - Create API health check
+      </tasks>
+    </step>
+
+    <step number="18">
+      <title>Testing Suite</title>
+      <tasks>
+        - Set up pytest framework
+        - Create unit tests for data collector agent (50+ tests)
+        - Build unit tests for analyst agent (40+ tests)
+        - Add tests for database operations (30+ tests)
+        - Create API endpoint tests (40+ tests)
+        - Build integration tests for full analysis flow (20+ tests)
+        - Add chart generation tests (15+ tests)
+        - Create cache system tests (15+ tests)
+        - Build performance tracking tests (15+ tests)
+        - Add error handling tests (25+ tests)
+        - Target: 250+ total tests for medium complexity
+      </tasks>
+    </step>
+
+    <step number="19">
+      <title>Documentation and Examples</title>
+      <tasks>
+        - Write comprehensive README with setup steps
+        - Create .env.example with all required variables
+        - Add API documentation
+        - Build user guide for web interface
+        - Create troubleshooting guide
+        - Add code comments for complex logic
+        - Write architecture documentation
+        - Create sample analysis reports
+        - Add contributing guidelines
+      </tasks>
+    </step>
+
+    <step number="20">
+      <title>Polish and Optimization</title>
+      <tasks>
+        - Optimize database queries with indexes
+        - Add database connection pooling
+        - Implement API response caching
+        - Optimize chart generation performance
+        - Add UI loading skeletons
+        - Implement debouncing for inputs
+        - Optimize frontend bundle size
+        - Add accessibility features (ARIA labels)
+        - Create favicon and app icon
+        - Final UI polish and responsive testing
+        - Performance profiling and optimization
+      </tasks>
+    </step>
+  </implementation_steps>
+
+  <success_criteria>
+    <functionality>
+      - Successfully fetch and store comprehensive stock data for any valid US ticker
+      - LLM generates accurate Buy/Sell/Hold recommendations with clear reasoning
+      - Web dashboard loads quickly and displays all data correctly
+      - Watchlist management works smoothly (add/remove/analyze all)
+      - Historical performance tracking calculates gains/losses accurately
+      - Background processing handles multiple stocks without errors
+      - Caching reduces redundant API calls and improves performance
+      - Settings changes persist and take effect immediately
+      - All 250+ tests pass consistently
+    </functionality>
+
+    <user_experience>
+      - Clean, intuitive web interface that's easy to navigate
+      - Fast analysis results (under 30 seconds for single stock)
+      - Clear visual indicators for recommendations (color coding)
+      - Helpful error messages that guide user to fix issues
+      - Smooth loading states and progress indicators
+      - Responsive design works well on desktop and tablet
+      - Charts are readable and provide valuable insights
+      - Reports are well-formatted and professional looking
+    </user_experience>
+
+    <technical_quality>
+      - Modular, maintainable code with clear separation of concerns
+      - Comprehensive error handling with no unhandled exceptions
+      - Efficient database queries with proper indexing
+      - Robust API rate limiting to avoid throttling
+      - Clean API design following REST principles
+      - Proper logging for debugging and monitoring
+      - No hardcoded credentials or sensitive data in code
+      - All dependencies pinned to specific versions
+      - Code follows PEP 8 style guidelines
+    </technical_quality>
+
+    <design_polish>
+      - Consistent color scheme throughout the application
+      - Professional typography with good readability
+      - Charts are visually appealing and informative
+      - Smooth transitions and hover effects
+      - Proper spacing and alignment
+      - Icons and visual elements are coherent
+      - Empty states are thoughtfully designed
+      - Error states are clear and actionable
+    </design_polish>
+  </success_criteria>
+</project_specification>
