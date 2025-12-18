@@ -462,14 +462,19 @@ User → Frontend (Jinja2 + Tailwind)
 
 ## Current Test Status
 - Total Tests: 273
-- Passing: 65
-- Failing: 208
-- Progress: 23.8%
+- Passing: 68
+- Failing: 205
+- Progress: 24.9%
+
+### Additional Tests Marked Passing (Session 6 continued):
+17. Error handling for invalid/expired LLM API tokens (API returns clear error)
+18. API responses don't leak internal server paths (clean error messages)
+19. Delete button in watchlist removes correct stock (verified with AAPL/MSFT/GOOGL)
 
 ## Notes for Next Agent
 
 ### CRITICAL
-- **65 tests now passing** (up from 49 in previous session)
+- **68 tests now passing** (up from 49 in previous session)
 - Browser automation (Playwright) not available - needs sudo for Chrome install
 - LLM analysis requires valid API key to test end-to-end
 - Focus on features that can be verified via API calls

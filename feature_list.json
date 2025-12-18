@@ -67,7 +67,7 @@
       "Step 6: Verify error message about invalid API key appears",
       "Step 7: Verify no sensitive error details are exposed"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -248,7 +248,7 @@
       "Step 4: Verify no database paths are exposed",
       "Step 5: Verify no Python traceback in API responses"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -339,7 +339,7 @@
       "Step 4: Verify only 'MSFT' is removed",
       "Step 5: Verify 'AAPL' and 'GOOGL' remain in list"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
