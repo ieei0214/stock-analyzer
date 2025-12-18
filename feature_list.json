@@ -1567,7 +1567,7 @@
       "Step 3: Open the application",
       "Step 4: Verify all data is still present"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1980,7 +1980,7 @@
       "Step 5: Verify analysis style is default",
       "Step 6: Verify LLM settings are default"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
