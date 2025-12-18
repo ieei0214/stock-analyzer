@@ -13,7 +13,7 @@
       "Step 8: Navigate to /settings page directly",
       "Step 9: Verify settings page loads without authentication"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -40,7 +40,7 @@
       "Step 5: Verify no data is stored in database for invalid ticker",
       "Step 6: Verify application remains functional after error"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -53,7 +53,7 @@
       "Step 5: Verify error message about missing API key appears",
       "Step 6: Verify analysis does not proceed without valid API key"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -79,7 +79,7 @@
       "Step 4: Enter ticker with script injection: \"<script>alert('xss')</script>\"",
       "Step 5: Verify input is sanitized and no script executes"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -165,7 +165,7 @@
       "Step 4: Attempt to access http://localhost:8000/../.env",
       "Step 5: Verify path traversal is blocked"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -176,7 +176,7 @@
       "Step 3: Verify database file is not served",
       "Step 4: Verify proper 404 or 403 response"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",

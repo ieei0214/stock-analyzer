@@ -4,15 +4,19 @@ Analysis API endpoints.
 Provides endpoints for stock analysis operations.
 """
 
+import os
+import logging
 from fastapi import APIRouter, HTTPException, Query
 from typing import Optional, List
 from datetime import datetime
 from pydantic import BaseModel
 
-from ..database.dao import AnalysisDAO, StockDAO
-from ..database.models import AnalysisResult, AnalysisCreate, APIResponse
+from ..database.dao import AnalysisDAO, StockDAO, StockDataDAO, SettingsDAO
+from ..database.models import AnalysisResult, StockCreate, APIResponse
+from ..agents import DataCollectorAgent, InvestmentAnalystAgent, validate_stock_ticker
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
 
 
 class AnalyzeRequest(BaseModel):
@@ -20,35 +24,130 @@ class AnalyzeRequest(BaseModel):
     analysis_style: str = "Conservative"
 
 
+def is_placeholder_key(key: str) -> bool:
+    """Check if an API key looks like a placeholder."""
+    if not key:
+        return True
+    placeholder_patterns = [
+        "your-", "your_", "placeholder", "example", "test",
+        "xxx", "sk-xxx", "enter-", "insert-", "add-your-"
+    ]
+    key_lower = key.lower()
+    return any(pattern in key_lower for pattern in placeholder_patterns)
+
+
+async def get_llm_settings():
+    """Get LLM configuration from settings."""
+    settings = await SettingsDAO.get_all()
+
+    provider = settings.get("llm_provider", "openai")
+
+    # Get API key from environment (not stored in database for security)
+    if provider == "openai":
+        api_key = os.getenv("OPENAI_API_KEY")
+    else:
+        api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
+
+    # Check for placeholder keys
+    if is_placeholder_key(api_key):
+        api_key = None
+
+    model = settings.get("model_name", "gpt-4" if provider == "openai" else "gemini-pro")
+
+    return provider, api_key, model
+
+
 @router.post("/analyze/{ticker}", response_model=AnalysisResult)
-async def analyze_stock(ticker: str, request: AnalyzeRequest):
+async def analyze_stock_endpoint(ticker: str, request: AnalyzeRequest):
     """
     Trigger analysis for a single stock.
 
     This endpoint:
     1. Fetches stock data via the Data Collector agent
     2. Runs LLM analysis via the Investment Analyst agent
-    3. Generates charts and report
-    4. Stores the analysis result
+    3. Stores the analysis result
     """
     ticker = ticker.strip().upper()
 
-    # Validate ticker
+    # Validate ticker format
     if not ticker or len(ticker) > 10:
-        raise HTTPException(status_code=400, detail="Invalid ticker symbol")
+        raise HTTPException(status_code=400, detail="Invalid ticker symbol format")
+
+    # Basic character validation
+    if not ticker.replace(".", "").replace("-", "").isalnum():
+        raise HTTPException(status_code=400, detail="Invalid ticker symbol characters")
 
     # Validate analysis style
     if request.analysis_style not in ("Conservative", "Aggressive"):
-        raise HTTPException(status_code=400, detail="Invalid analysis style")
+        raise HTTPException(status_code=400, detail="Invalid analysis style. Must be 'Conservative' or 'Aggressive'")
 
-    # TODO: Implement actual analysis using agents
-    # For now, create a placeholder to demonstrate the API structure
+    # Get LLM settings
+    provider, api_key, model = await get_llm_settings()
 
-    # This will be replaced with actual agent-based analysis
-    raise HTTPException(
-        status_code=501,
-        detail="Analysis not yet implemented. Agents module pending."
-    )
+    if not api_key:
+        raise HTTPException(
+            status_code=400,
+            detail=f"No API key configured for {provider}. Please configure your API key in Settings."
+        )
+
+    try:
+        # Step 1: Collect stock data
+        logger.info(f"Collecting data for {ticker}")
+        collector = DataCollectorAgent(ticker)
+
+        # Validate the ticker is real
+        if not collector.validate_ticker():
+            raise HTTPException(
+                status_code=400,
+                detail=f"Invalid ticker symbol: {ticker}. Could not find stock data."
+            )
+
+        stock_data = collector.collect_all_data()
+
+        # Ensure stock exists in database
+        company_info = stock_data.get("company", {})
+        await StockDAO.create(StockCreate(
+            ticker=ticker,
+            company_name=company_info.get("company_name"),
+            sector=company_info.get("sector"),
+            industry=company_info.get("industry"),
+        ))
+
+        # Cache the stock data
+        cache_hours = int((await SettingsDAO.get("cache_duration_hours")) or 1)
+        await StockDataDAO.save(ticker, "full_data", stock_data, cache_hours)
+
+        # Step 2: Run LLM analysis
+        logger.info(f"Running {provider} analysis for {ticker}")
+        analyst = InvestmentAnalystAgent(provider=provider, api_key=api_key, model=model)
+        analysis_result = await analyst.analyze(stock_data, request.analysis_style)
+
+        # Step 3: Store the analysis
+        saved_analysis = await AnalysisDAO.create(
+            ticker=ticker,
+            recommendation=analysis_result.recommendation,
+            confidence_level=analysis_result.confidence,
+            analysis_style=request.analysis_style,
+            reasoning=analysis_result.reasoning,
+            price_at_analysis=analysis_result.price_at_analysis,
+            llm_provider=provider,
+            llm_model=model,
+        )
+
+        logger.info(f"Analysis complete for {ticker}: {analysis_result.recommendation}")
+
+        return saved_analysis
+
+    except HTTPException:
+        raise
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        logger.error(f"Analysis failed for {ticker}: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Analysis failed: {str(e)}"
+        )
 
 
 @router.get("/analysis/{ticker}", response_model=AnalysisResult)

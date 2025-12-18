@@ -4,14 +4,17 @@ Watchlist API endpoints.
 Provides endpoints for managing the stock watchlist.
 """
 
+import logging
 from fastapi import APIRouter, HTTPException, BackgroundTasks
 from typing import List
 from pydantic import BaseModel
 
 from ..database.dao import WatchlistDAO, StockDAO
-from ..database.models import WatchlistItem, WatchlistItemCreate, APIResponse
+from ..database.models import WatchlistItem, WatchlistItemCreate, APIResponse, StockCreate
+from ..agents import DataCollectorAgent, validate_stock_ticker
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
 
 
 class AddStockRequest(BaseModel):
@@ -19,10 +22,36 @@ class AddStockRequest(BaseModel):
     ticker: str
 
 
+async def enrich_watchlist_item(item: WatchlistItem) -> WatchlistItem:
+    """Enrich a watchlist item with current price data."""
+    try:
+        collector = DataCollectorAgent(item.ticker)
+        price_data = collector.get_current_price()
+
+        item.current_price = price_data.get("current_price")
+        item.price_change_percent = price_data.get("change_percent")
+    except Exception as e:
+        logger.warning(f"Failed to get price data for {item.ticker}: {e}")
+
+    return item
+
+
 @router.get("", response_model=List[WatchlistItem])
 async def get_watchlist():
-    """Get all stocks in the watchlist."""
-    return await WatchlistDAO.get_all()
+    """Get all stocks in the watchlist with enriched data."""
+    items = await WatchlistDAO.get_all()
+
+    # Enrich each item with current price data
+    enriched_items = []
+    for item in items:
+        try:
+            enriched = await enrich_watchlist_item(item)
+            enriched_items.append(enriched)
+        except Exception as e:
+            logger.warning(f"Failed to enrich {item.ticker}: {e}")
+            enriched_items.append(item)
+
+    return enriched_items
 
 
 @router.post("", response_model=WatchlistItem)
@@ -41,10 +70,37 @@ async def add_to_watchlist(request: AddStockRequest):
             detail=f"{ticker} is already in your watchlist"
         )
 
+    # Validate ticker exists on yfinance
+    if not validate_stock_ticker(ticker):
+        raise HTTPException(
+            status_code=400,
+            detail=f"Invalid ticker symbol: {ticker}. Could not find stock data."
+        )
+
     try:
+        # Get company info from yfinance
+        collector = DataCollectorAgent(ticker)
+        company_info = collector.get_company_info()
+
+        # Create or update stock record
+        await StockDAO.create(StockCreate(
+            ticker=ticker,
+            company_name=company_info.get("company_name"),
+            sector=company_info.get("sector"),
+            industry=company_info.get("industry"),
+        ))
+
+        # Add to watchlist
         item = await WatchlistDAO.add(WatchlistItemCreate(ticker=ticker))
+
+        # Enrich with price data
+        item = await enrich_watchlist_item(item)
+
         return item
+    except HTTPException:
+        raise
     except Exception as e:
+        logger.error(f"Failed to add {ticker} to watchlist: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
