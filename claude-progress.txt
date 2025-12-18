@@ -311,10 +311,28 @@
 - Stock validation and data fetching
 - **Navigation**: Active states, deep linking, 404 handling all working
 
+### 3. Implemented Chart Generation Feature
+
+**New files created:**
+- `src/charts/generator.py` - Chart generation using matplotlib
+
+**Chart types implemented:**
+1. **Price Chart** - Historical prices with 50-day and 200-day moving averages
+2. **Volume Chart** - Volume bars color-coded by price direction (green for up, red for down)
+3. **RSI Chart** - RSI indicator with overbought (70) and oversold (30) zones
+4. **MACD Chart** - MACD line, signal line, and histogram
+
+**New API endpoint:**
+- `GET /api/stock/{ticker}/chart-images` - Returns base64-encoded PNG images
+  - Optional `chart_type` param: price, volume, rsi, macd
+  - If no chart_type specified, returns all charts
+
+**Verified working:**
+- Tested endpoint with AAPL - returns valid base64 PNG data
+
 ### What Needs Work
 - **Browser automation**: MCP Playwright Chrome not installed (needs sudo)
 - **Analysis flow**: Requires valid LLM API key to test end-to-end
-- **Charts**: Placeholder only
 - **Reports**: Not implemented
 - **Performance tracking**: Partially implemented
 
