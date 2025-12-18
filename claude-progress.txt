@@ -407,14 +407,14 @@ User → Frontend (Jinja2 + Tailwind)
 
 ## Current Test Status
 - Total Tests: 273
-- Passing: 35
-- Failing: 238
-- Progress: 12.8%
+- Passing: 49
+- Failing: 224
+- Progress: 17.9%
 
 ## Notes for Next Agent
 
 ### CRITICAL
-- **35 tests now passing** (maintained from previous session)
+- **49 tests now passing** (up from 35 in previous session)
 - Browser automation (Playwright) not available - needs sudo for Chrome install
 - LLM analysis requires valid API key to test end-to-end
 - Focus on features that can be verified via API calls
@@ -426,21 +426,35 @@ User → Frontend (Jinja2 + Tailwind)
 - Analyst Agent implemented with OpenAI/Gemini support
 - Settings with API key masking
 - Watchlist with real-time prices
-- Chart generation (matplotlib)
-- All pages rendering correctly
+- Chart generation (matplotlib) - now integrated into UI
+- All pages rendering correctly with dynamic charts
 - Navigation and deep linking working
+- Loading states and button disable during operations
+- Error handling with meaningful messages
 
 ### What Needs Work
 - Browser automation testing (Chrome not installed)
 - End-to-end LLM analysis flow (needs valid API key)
 - Report generation (not fully implemented)
-- More tests to mark as passing with verification
+- Many workflow tests require full browser automation
+
+### Tests Verified This Session
+1. URL parameter handling (malformed, very long, non-integer IDs)
+2. Empty search results display
+3. LLM API error messages with suggestions
+4. Loading states and spinners
+5. Charts loaded from API dynamically
+6. Settings form submission
+7. Delete request backend persistence
+8. Analysis style parameter passing
+9. API test endpoint status responses
+10. API request format matching backend
 
 ### Technology Notes
 - FastAPI with async/await throughout
 - SQLite with aiosqlite for async database access
 - Pydantic for all data validation
 - Jinja2 templates with Tailwind CSS
-- Matplotlib for chart generation
+- Matplotlib for chart generation (base64 PNG)
 - yfinance for stock data
 - OpenAI/Gemini for LLM analysis
