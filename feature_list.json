@@ -1648,7 +1648,7 @@
       "Step 3: Verify no crash",
       "Step 4: Verify navigation still works"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1681,7 +1681,7 @@
       "Step 3: Verify no database manipulation",
       "Step 4: Verify error message"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
