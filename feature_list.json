@@ -1169,7 +1169,7 @@
       "Step 3: Verify application doesn't crash",
       "Step 4: Verify navigation still works"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1180,7 +1180,7 @@
       "Step 3: Verify no Python traceback visible",
       "Step 4: Verify friendly error message displayed"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2234,7 +2234,7 @@
       "Step 2: Submit form",
       "Step 3: Verify validation rejects whitespace-only"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2244,7 +2244,7 @@
       "Step 2: Submit form",
       "Step 3: Verify rejection or truncation"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2255,7 +2255,7 @@
       "Step 3: Try to submit with manipulated value",
       "Step 4: Verify server rejects invalid option"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2264,7 +2264,7 @@
       "Step 1: Submit settings with invalid provider value",
       "Step 2: Verify validation error"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2273,7 +2273,7 @@
       "Step 1: Submit analysis with invalid style",
       "Step 2: Verify validation error"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",

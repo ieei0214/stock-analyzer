@@ -7,7 +7,7 @@ Multi-agent stock analysis system with web dashboard.
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from pathlib import Path
@@ -139,7 +139,10 @@ async def analysis_detail_page(request: Request, ticker: str):
 async def not_found_handler(request: Request, exc: HTTPException):
     """Handle 404 errors."""
     if request.url.path.startswith("/api/"):
-        return {"success": False, "message": "Resource not found"}
+        return JSONResponse(
+            status_code=404,
+            content={"success": False, "message": "Resource not found"}
+        )
     return templates.TemplateResponse(
         "404.html",
         {"request": request, "page": "error"},
@@ -148,11 +151,14 @@ async def not_found_handler(request: Request, exc: HTTPException):
 
 
 @app.exception_handler(500)
-async def server_error_handler(request: Request, exc: HTTPException):
+async def server_error_handler(request: Request, exc: Exception):
     """Handle 500 errors."""
     logger.error(f"Server error: {exc}")
     if request.url.path.startswith("/api/"):
-        return {"success": False, "message": "Internal server error"}
+        return JSONResponse(
+            status_code=500,
+            content={"success": False, "message": "Internal server error"}
+        )
     return templates.TemplateResponse(
         "500.html",
         {"request": request, "page": "error"},
