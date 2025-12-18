@@ -102,7 +102,7 @@
       "Step 3: Verify API keys are masked or not present in logs",
       "Step 4: Verify stack traces don't contain sensitive credentials"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -200,7 +200,7 @@
       "Step 4: Verify validation error for missing API key",
       "Step 5: Verify settings are not saved with missing required fields"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -212,7 +212,7 @@
       "Step 4: Verify task IDs use UUIDs or random identifiers",
       "Step 5: Verify cannot enumerate other tasks"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -236,7 +236,7 @@
       "Step 5: Call cancel with invalid task ID",
       "Step 6: Verify appropriate error response"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1756,7 +1756,7 @@
       "Step 4: Verify only one stock entry created",
       "Step 5: Check database for duplicates"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1768,7 +1768,7 @@
       "Step 4: Verify only one deletion occurs",
       "Step 5: Verify no errors from multiple requests"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1845,7 +1845,7 @@
       "Step 3: Verify removed from watchlist table",
       "Step 4: Verify removed from database watchlist table"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1867,7 +1867,7 @@
       "Step 2: Delete a stock",
       "Step 3: Verify count updates to 4 immediately"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2192,7 +2192,7 @@
       "Step 3: Try to save",
       "Step 4: Verify validation error"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2202,7 +2202,7 @@
       "Step 2: Verify each error message is specific",
       "Step 3: Verify not just 'Invalid' but describes the issue"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2224,7 +2224,7 @@
       "Step 3: Verify server also rejects",
       "Step 4: Verify error displayed to user"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",

@@ -12,15 +12,57 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from pathlib import Path
 import logging
+import re
 
 from .database.connection import init_database, check_database_exists
 from .api import watchlist, analysis, stock, performance, settings, tasks
 
-# Configure logging
+
+class APIKeyFilter(logging.Filter):
+    """Filter to mask API keys in log messages."""
+
+    # Patterns that match common API key formats
+    API_KEY_PATTERNS = [
+        r'sk-[a-zA-Z0-9]{20,}',  # OpenAI API key format
+        r'AIza[a-zA-Z0-9_-]{35}',  # Google API key format
+        r'[a-zA-Z0-9]{32,64}',  # Generic long alphanumeric keys
+    ]
+
+    def filter(self, record):
+        """Filter the log record to mask API keys."""
+        if hasattr(record, 'msg') and isinstance(record.msg, str):
+            for pattern in self.API_KEY_PATTERNS:
+                record.msg = re.sub(
+                    pattern,
+                    lambda m: m.group()[:4] + '...' + m.group()[-4:] if len(m.group()) > 8 else '***',
+                    record.msg
+                )
+        if hasattr(record, 'args') and record.args:
+            new_args = []
+            for arg in record.args:
+                if isinstance(arg, str):
+                    for pattern in self.API_KEY_PATTERNS:
+                        arg = re.sub(
+                            pattern,
+                            lambda m: m.group()[:4] + '...' + m.group()[-4:] if len(m.group()) > 8 else '***',
+                            arg
+                        )
+                new_args.append(arg)
+            record.args = tuple(new_args)
+        return True
+
+
+# Configure logging with API key filter
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
+
+# Add API key filter to root logger
+api_key_filter = APIKeyFilter()
+for handler in logging.root.handlers:
+    handler.addFilter(api_key_filter)
+
 logger = logging.getLogger(__name__)
 
 # Get project root directory

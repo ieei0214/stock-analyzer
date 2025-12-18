@@ -66,6 +66,58 @@ async def update_settings(settings: SettingsUpdate):
         if not ENV_PATH.exists():
             ENV_PATH.touch()
 
+        # Load current settings
+        load_dotenv(ENV_PATH)
+        current_openai_key = os.getenv("OPENAI_API_KEY", "")
+        current_gemini_key = os.getenv("GEMINI_API_KEY", "")
+
+        # Check if openai_api_key is being set to empty with openai provider
+        provider = settings.llm_provider or os.getenv("LLM_PROVIDER", "openai")
+
+        # Determine the effective API keys after update
+        effective_openai_key = settings.openai_api_key if settings.openai_api_key else current_openai_key
+        effective_gemini_key = settings.gemini_api_key if settings.gemini_api_key else current_gemini_key
+
+        # Validate API key format if being set
+        if settings.openai_api_key and settings.openai_api_key not in ["", None]:
+            if len(settings.openai_api_key) < 20:
+                return APIResponse(
+                    success=False,
+                    message="OpenAI API key appears to be too short. A valid key should be at least 20 characters."
+                )
+        if settings.gemini_api_key and settings.gemini_api_key not in ["", None]:
+            if len(settings.gemini_api_key) < 20:
+                return APIResponse(
+                    success=False,
+                    message="Gemini API key appears to be too short. A valid key should be at least 20 characters."
+                )
+
+        # Validate API key is set for selected provider
+        if provider == "openai":
+            if settings.openai_api_key == "":
+                # Explicitly clearing the key
+                return APIResponse(
+                    success=False,
+                    message="API key is required for the selected provider (OpenAI)"
+                )
+            if not effective_openai_key or effective_openai_key == "your-openai-api-key-here":
+                return APIResponse(
+                    success=False,
+                    message="API key is required for the selected provider (OpenAI)"
+                )
+        elif provider == "gemini":
+            if settings.gemini_api_key == "":
+                # Explicitly clearing the key
+                return APIResponse(
+                    success=False,
+                    message="API key is required for the selected provider (Gemini)"
+                )
+            if not effective_gemini_key or effective_gemini_key == "your-gemini-api-key-here":
+                return APIResponse(
+                    success=False,
+                    message="API key is required for the selected provider (Gemini)"
+                )
+
         # Update .env file
         if settings.llm_provider:
             set_key(str(ENV_PATH), "LLM_PROVIDER", settings.llm_provider)
