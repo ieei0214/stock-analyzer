@@ -1,0 +1,325 @@
+{% extends "base.html" %}
+
+{% block title %}History - Stock Analyzer{% endblock %}
+{% block page_title %}Analysis History{% endblock %}
+
+{% block content %}
+<!-- Performance Stats -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <p class="text-sm text-gray-500">Total Analyses</p>
+        <p id="stat-total" class="text-3xl font-bold text-gray-800">-</p>
+    </div>
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <p class="text-sm text-gray-500">Checked</p>
+        <p id="stat-checked" class="text-3xl font-bold text-gray-800">-</p>
+    </div>
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <p class="text-sm text-gray-500">Success Rate</p>
+        <p id="stat-success" class="text-3xl font-bold text-green-600">-</p>
+    </div>
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <p class="text-sm text-gray-500">Avg Gain/Loss</p>
+        <p id="stat-avg" class="text-3xl font-bold text-gray-800">-</p>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
+    <div class="flex flex-wrap items-end gap-4">
+        <div>
+            <label for="filter-ticker" class="block text-sm font-medium text-gray-700 mb-1">Ticker</label>
+            <select id="filter-ticker" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary">
+                <option value="">All Tickers</option>
+            </select>
+        </div>
+        <div>
+            <label for="filter-start" class="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+            <input type="date" id="filter-start" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary">
+        </div>
+        <div>
+            <label for="filter-end" class="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+            <input type="date" id="filter-end" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary">
+        </div>
+        <button id="apply-filters" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-600 transition-colors">
+            Apply Filters
+        </button>
+        <button id="clear-filters" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+            Clear
+        </button>
+        <div class="flex-1"></div>
+        <button id="export-btn" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors flex items-center space-x-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+            </svg>
+            <span>Export CSV</span>
+        </button>
+    </div>
+</div>
+
+<!-- History Table -->
+<div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+    <div id="history-loading" class="p-8 text-center text-gray-500">
+        <div class="spinner mx-auto mb-4"></div>
+        <p>Loading history...</p>
+    </div>
+
+    <div id="history-empty" class="p-8 text-center hidden">
+        <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        <h3 class="text-lg font-medium text-gray-700 mb-2">No analysis history</h3>
+        <p class="text-gray-500">Analyze some stocks to see them here</p>
+    </div>
+
+    <table id="history-table" class="min-w-full divide-y divide-gray-200 hidden">
+        <thead class="bg-gray-50">
+            <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100" onclick="sortBy('analysis_date')">
+                    Date <span id="sort-date" class="ml-1"></span>
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100" onclick="sortBy('ticker')">
+                    Ticker <span id="sort-ticker" class="ml-1"></span>
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Recommendation</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Confidence</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price Then</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price Now</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Gain/Loss</th>
+                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+            </tr>
+        </thead>
+        <tbody id="history-body" class="bg-white divide-y divide-gray-200">
+        </tbody>
+    </table>
+
+    <!-- Pagination -->
+    <div id="pagination" class="hidden bg-gray-50 px-6 py-3 flex items-center justify-between border-t border-gray-200">
+        <div class="text-sm text-gray-500">
+            Showing <span id="page-start">0</span> to <span id="page-end">0</span> of <span id="total-count">0</span> results
+        </div>
+        <div class="flex space-x-2">
+            <button id="prev-page" class="px-3 py-1 border rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed">Previous</button>
+            <span id="page-info" class="px-3 py-1">Page 1</span>
+            <button id="next-page" class="px-3 py-1 border rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed">Next</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let historyData = [];
+    let currentPage = 1;
+    const pageSize = 20;
+    let totalCount = 0;
+    let sortField = 'analysis_date';
+    let sortOrder = 'desc';
+
+    async function loadStats() {
+        try {
+            const stats = await api('/api/performance/stats');
+            document.getElementById('stat-total').textContent = stats.total_analyses;
+            document.getElementById('stat-checked').textContent = stats.total_checked;
+            document.getElementById('stat-success').textContent = stats.success_rate.toFixed(1) + '%';
+            document.getElementById('stat-avg').textContent = (stats.average_gain_loss >= 0 ? '+' : '') + stats.average_gain_loss.toFixed(2) + '%';
+        } catch (err) {
+            console.error('Failed to load stats:', err);
+        }
+    }
+
+    async function loadTickers() {
+        try {
+            const data = await api('/api/analyses/tickers');
+            const select = document.getElementById('filter-ticker');
+            data.tickers.forEach(ticker => {
+                const option = document.createElement('option');
+                option.value = ticker;
+                option.textContent = ticker;
+                select.appendChild(option);
+            });
+        } catch (err) {
+            console.error('Failed to load tickers:', err);
+        }
+    }
+
+    async function loadHistory() {
+        const loading = document.getElementById('history-loading');
+        const empty = document.getElementById('history-empty');
+        const table = document.getElementById('history-table');
+        const pagination = document.getElementById('pagination');
+
+        loading.classList.remove('hidden');
+        table.classList.add('hidden');
+        empty.classList.add('hidden');
+
+        try {
+            const ticker = document.getElementById('filter-ticker').value;
+            const startDate = document.getElementById('filter-start').value;
+            const endDate = document.getElementById('filter-end').value;
+
+            let url = `/api/analyses?limit=${pageSize}&offset=${(currentPage - 1) * pageSize}`;
+            if (ticker) url += `&ticker=${ticker}`;
+            if (startDate) url += `&start_date=${startDate}`;
+            if (endDate) url += `&end_date=${endDate}`;
+
+            const data = await api(url);
+            historyData = data;
+
+            // Get count
+            let countUrl = '/api/analyses/count?';
+            if (ticker) countUrl += `&ticker=${ticker}`;
+            if (startDate) countUrl += `&start_date=${startDate}`;
+            if (endDate) countUrl += `&end_date=${endDate}`;
+            const countData = await api(countUrl);
+            totalCount = countData.count;
+
+            loading.classList.add('hidden');
+
+            if (data.length === 0) {
+                empty.classList.remove('hidden');
+                pagination.classList.add('hidden');
+            } else {
+                table.classList.remove('hidden');
+                pagination.classList.remove('hidden');
+                renderTable(data);
+                updatePagination();
+            }
+        } catch (err) {
+            loading.classList.add('hidden');
+            showToast('Failed to load history: ' + err.message, 'error');
+        }
+    }
+
+    function renderTable(data) {
+        const body = document.getElementById('history-body');
+        body.innerHTML = data.map(item => `
+            <tr class="hover:bg-gray-50 transition-colors">
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                    ${new Date(item.analysis_date).toLocaleDateString()}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <a href="/analysis/${item.ticker}" class="font-mono font-bold text-primary hover:underline">${item.ticker}</a>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    ${getRecommendationBadge(item.recommendation)}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                    ${getConfidenceBadge(item.confidence_level)}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap font-mono">
+                    ${item.price_at_analysis ? '$' + item.price_at_analysis.toFixed(2) : '-'}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap font-mono">
+                    ${item.current_price ? '$' + item.current_price.toFixed(2) : '-'}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap font-mono ${getGainLossColor(item.gain_loss_percent)}">
+                    ${item.gain_loss_percent !== null ? (item.gain_loss_percent >= 0 ? '+' : '') + item.gain_loss_percent.toFixed(2) + '%' : '-'}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <button onclick="checkPerformance(${item.id})" class="text-primary hover:text-blue-700" title="Check Performance">
+                        <svg class="w-5 h-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                    </button>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    function getRecommendationBadge(rec) {
+        const colors = {
+            'Buy': 'bg-green-100 text-green-800',
+            'Sell': 'bg-red-100 text-red-800',
+            'Hold': 'bg-yellow-100 text-yellow-800'
+        };
+        return `<span class="px-2 py-1 rounded-full text-xs font-medium ${colors[rec] || 'bg-gray-100 text-gray-800'}">${rec}</span>`;
+    }
+
+    function getConfidenceBadge(conf) {
+        const colors = {
+            'High': 'text-green-600',
+            'Medium': 'text-yellow-600',
+            'Low': 'text-red-600'
+        };
+        return `<span class="${colors[conf] || 'text-gray-600'}">${conf}</span>`;
+    }
+
+    function getGainLossColor(val) {
+        if (val === null) return 'text-gray-400';
+        return val >= 0 ? 'text-green-600' : 'text-red-600';
+    }
+
+    function updatePagination() {
+        const totalPages = Math.ceil(totalCount / pageSize);
+        const start = (currentPage - 1) * pageSize + 1;
+        const end = Math.min(currentPage * pageSize, totalCount);
+
+        document.getElementById('page-start').textContent = start;
+        document.getElementById('page-end').textContent = end;
+        document.getElementById('total-count').textContent = totalCount;
+        document.getElementById('page-info').textContent = `Page ${currentPage} of ${totalPages}`;
+
+        document.getElementById('prev-page').disabled = currentPage === 1;
+        document.getElementById('next-page').disabled = currentPage >= totalPages;
+    }
+
+    function sortBy(field) {
+        if (sortField === field) {
+            sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+        } else {
+            sortField = field;
+            sortOrder = 'desc';
+        }
+        currentPage = 1;
+        loadHistory();
+    }
+
+    async function checkPerformance(analysisId) {
+        try {
+            showToast('Checking performance...', 'info');
+            await api(`/api/performance/check/${analysisId}`, { method: 'POST' });
+            showToast('Performance checked successfully', 'success');
+            loadHistory();
+            loadStats();
+        } catch (err) {
+            showToast(err.message, 'error');
+        }
+    }
+
+    // Event listeners
+    document.getElementById('apply-filters').addEventListener('click', () => {
+        currentPage = 1;
+        loadHistory();
+    });
+
+    document.getElementById('clear-filters').addEventListener('click', () => {
+        document.getElementById('filter-ticker').value = '';
+        document.getElementById('filter-start').value = '';
+        document.getElementById('filter-end').value = '';
+        currentPage = 1;
+        loadHistory();
+    });
+
+    document.getElementById('prev-page').addEventListener('click', () => {
+        if (currentPage > 1) {
+            currentPage--;
+            loadHistory();
+        }
+    });
+
+    document.getElementById('next-page').addEventListener('click', () => {
+        currentPage++;
+        loadHistory();
+    });
+
+    document.getElementById('export-btn').addEventListener('click', () => {
+        showToast('Export functionality coming soon', 'info');
+    });
+
+    // Initial load
+    loadStats();
+    loadTickers();
+    loadHistory();
+</script>
+{% endblock %}

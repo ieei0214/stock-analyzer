@@ -1,0 +1,257 @@
+{% extends "base.html" %}
+
+{% block title %}Settings - Stock Analyzer{% endblock %}
+{% block page_title %}Settings{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl">
+    <form id="settings-form" class="space-y-6">
+        <!-- API Configuration -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <h2 class="text-lg font-semibold text-gray-800 mb-4">API Configuration</h2>
+
+            <div class="space-y-4">
+                <div>
+                    <label for="llm-provider" class="block text-sm font-medium text-gray-700 mb-1">LLM Provider</label>
+                    <select id="llm-provider" name="llm_provider" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary">
+                        <option value="openai">OpenAI</option>
+                        <option value="gemini">Google Gemini</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="openai-key" class="block text-sm font-medium text-gray-700 mb-1">OpenAI API Key</label>
+                    <input
+                        type="password"
+                        id="openai-key"
+                        name="openai_api_key"
+                        placeholder="sk-..."
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
+                    >
+                    <p id="openai-status" class="mt-1 text-sm text-gray-500"></p>
+                </div>
+
+                <div>
+                    <label for="gemini-key" class="block text-sm font-medium text-gray-700 mb-1">Gemini API Key</label>
+                    <input
+                        type="password"
+                        id="gemini-key"
+                        name="gemini_api_key"
+                        placeholder="AIza..."
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
+                    >
+                    <p id="gemini-status" class="mt-1 text-sm text-gray-500"></p>
+                </div>
+
+                <div>
+                    <label for="model-name" class="block text-sm font-medium text-gray-700 mb-1">Model Name</label>
+                    <input
+                        type="text"
+                        id="model-name"
+                        name="model_name"
+                        placeholder="gpt-4"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
+                    >
+                    <p class="mt-1 text-xs text-gray-500">For OpenAI: gpt-4, gpt-4-turbo-preview, gpt-3.5-turbo. For Gemini: gemini-pro</p>
+                </div>
+
+                <button
+                    type="button"
+                    id="test-api-btn"
+                    class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors flex items-center space-x-2"
+                >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <span>Test API Connection</span>
+                </button>
+                <p id="test-result" class="text-sm hidden"></p>
+            </div>
+        </div>
+
+        <!-- Analysis Preferences -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <h2 class="text-lg font-semibold text-gray-800 mb-4">Analysis Preferences</h2>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Default Analysis Style</label>
+                    <div class="flex space-x-4">
+                        <label class="flex items-center">
+                            <input type="radio" name="default_analysis_style" value="Conservative" class="text-primary focus:ring-primary">
+                            <span class="ml-2">Conservative</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="radio" name="default_analysis_style" value="Aggressive" class="text-primary focus:ring-primary">
+                            <span class="ml-2">Aggressive</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cache Settings -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <h2 class="text-lg font-semibold text-gray-800 mb-4">Cache Settings</h2>
+
+            <div>
+                <label for="cache-duration" class="block text-sm font-medium text-gray-700 mb-1">Cache Duration</label>
+                <select id="cache-duration" name="cache_duration_hours" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary">
+                    <option value="1">1 hour</option>
+                    <option value="6">6 hours</option>
+                    <option value="12">12 hours</option>
+                    <option value="24">1 day</option>
+                </select>
+                <p class="mt-1 text-xs text-gray-500">How long to cache stock data before fetching fresh data</p>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex justify-between">
+            <button
+                type="button"
+                id="reset-btn"
+                class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-gray-600"
+            >
+                Reset to Defaults
+            </button>
+            <button
+                type="submit"
+                id="save-btn"
+                class="px-6 py-2 bg-primary text-white rounded-lg hover:bg-blue-600 transition-colors font-medium flex items-center space-x-2"
+            >
+                <span>Save Settings</span>
+                <span id="save-spinner" class="spinner hidden"></span>
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Load current settings
+    async function loadSettings() {
+        try {
+            const settings = await api('/api/settings');
+
+            document.getElementById('llm-provider').value = settings.llm_provider;
+            document.getElementById('model-name').value = settings.model_name;
+            document.getElementById('cache-duration').value = settings.cache_duration_hours;
+
+            // Set default analysis style
+            const styleRadio = document.querySelector(`input[name="default_analysis_style"][value="${settings.default_analysis_style}"]`);
+            if (styleRadio) styleRadio.checked = true;
+
+            // Show API key status
+            document.getElementById('openai-status').textContent = settings.openai_api_key_set ? '✓ API key is set' : '';
+            document.getElementById('openai-status').className = settings.openai_api_key_set ? 'mt-1 text-sm text-green-600' : 'mt-1 text-sm text-gray-500';
+
+            document.getElementById('gemini-status').textContent = settings.gemini_api_key_set ? '✓ API key is set' : '';
+            document.getElementById('gemini-status').className = settings.gemini_api_key_set ? 'mt-1 text-sm text-green-600' : 'mt-1 text-sm text-gray-500';
+
+        } catch (err) {
+            showToast('Failed to load settings: ' + err.message, 'error');
+        }
+    }
+
+    // Save settings
+    document.getElementById('settings-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const btn = document.getElementById('save-btn');
+        const spinner = document.getElementById('save-spinner');
+        btn.disabled = true;
+        spinner.classList.remove('hidden');
+
+        const formData = {
+            llm_provider: document.getElementById('llm-provider').value,
+            model_name: document.getElementById('model-name').value,
+            cache_duration_hours: parseInt(document.getElementById('cache-duration').value),
+            default_analysis_style: document.querySelector('input[name="default_analysis_style"]:checked')?.value
+        };
+
+        // Only include API keys if they were entered (not placeholder)
+        const openaiKey = document.getElementById('openai-key').value;
+        const geminiKey = document.getElementById('gemini-key').value;
+
+        if (openaiKey && !openaiKey.includes('•')) {
+            formData.openai_api_key = openaiKey;
+        }
+        if (geminiKey && !geminiKey.includes('•')) {
+            formData.gemini_api_key = geminiKey;
+        }
+
+        try {
+            await api('/api/settings', {
+                method: 'PUT',
+                body: JSON.stringify(formData)
+            });
+            showToast('Settings saved successfully', 'success');
+            loadSettings(); // Reload to show updated status
+        } catch (err) {
+            showToast('Failed to save settings: ' + err.message, 'error');
+        } finally {
+            btn.disabled = false;
+            spinner.classList.add('hidden');
+        }
+    });
+
+    // Test API connection
+    document.getElementById('test-api-btn').addEventListener('click', async () => {
+        const provider = document.getElementById('llm-provider').value;
+        const apiKey = provider === 'openai'
+            ? document.getElementById('openai-key').value
+            : document.getElementById('gemini-key').value;
+
+        const resultEl = document.getElementById('test-result');
+        resultEl.classList.remove('hidden', 'text-green-600', 'text-red-600');
+        resultEl.textContent = 'Testing connection...';
+
+        if (!apiKey || apiKey.includes('•')) {
+            resultEl.textContent = 'Please enter an API key first';
+            resultEl.classList.add('text-red-600');
+            return;
+        }
+
+        try {
+            const result = await api('/api/settings/test-api', {
+                method: 'POST',
+                body: JSON.stringify({ provider, api_key: apiKey })
+            });
+
+            if (result.success) {
+                resultEl.textContent = '✓ ' + result.message;
+                resultEl.classList.add('text-green-600');
+            } else {
+                resultEl.textContent = '✗ ' + result.message;
+                resultEl.classList.add('text-red-600');
+            }
+        } catch (err) {
+            resultEl.textContent = '✗ ' + err.message;
+            resultEl.classList.add('text-red-600');
+        }
+    });
+
+    // Reset to defaults
+    document.getElementById('reset-btn').addEventListener('click', async () => {
+        const confirmed = await showConfirm(
+            'Reset Settings',
+            'Are you sure you want to reset all settings to defaults? This will not clear your API keys.'
+        );
+
+        if (!confirmed) return;
+
+        try {
+            await api('/api/settings/reset', { method: 'POST' });
+            showToast('Settings reset to defaults', 'success');
+            loadSettings();
+        } catch (err) {
+            showToast('Failed to reset settings: ' + err.message, 'error');
+        }
+    });
+
+    // Initial load
+    loadSettings();
+</script>
+{% endblock %}
