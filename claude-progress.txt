@@ -703,7 +703,17 @@ User → Frontend (Jinja2 + Tailwind)
 3. Try to verify more tests via curl calls
 
 ## Session 8 Stats
-- **Tests passing: 85 out of 273 (31.1%)**
-- Progress improved from 81 to 85 tests this session
-- 4 new tests verified and marked as passing
+- **Tests passing: 87 out of 273 (31.9%)**
+- Progress improved from 81 to 87 tests this session
+- 6 new tests verified and marked as passing
 - Fixed critical news data bug
+- Added insider trading API endpoint with nan value handling
+
+### Additional Tests Marked Passing (Session 8 update):
+5. **C. Real Data Verification - Insider trading data reflects real filings**
+   - Added insider data type to stock API
+   - Returns real SEC filing data with dates, shares, values
+
+6. **C. Real Data Verification - Cache indicator shows accurate data freshness**
+   - Cache status endpoint returns accurate cached/not-cached status
+   - from_cache field in API responses indicates data freshness

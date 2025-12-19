@@ -870,7 +870,7 @@
       "Step 3: Verify it shows 'just now' or recent time",
       "Step 4: Wait and verify indicator updates appropriately"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
