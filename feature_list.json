@@ -2798,7 +2798,7 @@
       "Step 2: Verify tasks execute in order",
       "Step 3: Verify no race conditions in queue"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2914,7 +2914,7 @@
       "Step 2: Perform common operations",
       "Step 3: Verify no JavaScript errors in console"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
