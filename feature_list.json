@@ -2554,7 +2554,7 @@
       "Step 2: Verify visible focus ring on each",
       "Step 3: Verify focus ring has sufficient contrast"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
