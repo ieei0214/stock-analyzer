@@ -170,6 +170,21 @@
 
     let currentAnalysis = null;
 
+    // Load default analysis style from settings
+    async function loadDefaultStyle() {
+        try {
+            const settings = await api('/api/settings');
+            const defaultStyle = settings.default_analysis_style || 'Conservative';
+            const styleRadios = document.querySelectorAll('input[name="style"]');
+            styleRadios.forEach(radio => {
+                radio.checked = radio.value === defaultStyle;
+            });
+        } catch (err) {
+            console.error('Failed to load default style:', err);
+        }
+    }
+    loadDefaultStyle();
+
     document.getElementById('analyze-form').addEventListener('submit', async (e) => {
         e.preventDefault();
 

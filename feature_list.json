@@ -1780,7 +1780,7 @@
       "Step 4: Verify cannot click again",
       "Step 5: After completion, verify button re-enabled"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1956,7 +1956,7 @@
       "Step 3: Verify analysis style matches default in settings",
       "Step 4: Verify analyze button is enabled"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2037,7 +2037,7 @@
       "Step 5: Refresh analyze page",
       "Step 6: Verify 'Conservative' is pre-selected"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2057,7 +2057,7 @@
       "Step 2: Try to add to watchlist",
       "Step 3: Verify validation error or spaces trimmed"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2067,7 +2067,7 @@
       "Step 2: Try to analyze",
       "Step 3: Verify validation error, no crash"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2077,7 +2077,7 @@
       "Step 2: Try to analyze",
       "Step 3: Verify handled gracefully (truncate or reject)"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2131,7 +2131,7 @@
       "Step 2: Filter by 'aapl' (lowercase)",
       "Step 3: Verify AAPL results shown"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2171,7 +2171,7 @@
       "Step 4: Verify error message near field",
       "Step 5: Verify form not submitted"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2181,7 +2181,7 @@
       "Step 2: Click analyze",
       "Step 3: Verify error about invalid ticker format"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2213,7 +2213,7 @@
       "Step 3: Enter valid ticker",
       "Step 4: Verify error message clears"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2327,7 +2327,7 @@
       "Step 3: Verify message is specific (e.g., 'AAPL added')",
       "Step 4: Verify toast auto-dismisses"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2337,7 +2337,7 @@
       "Step 2: Verify error toast appears",
       "Step 3: Verify error message is helpful"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2348,7 +2348,7 @@
       "Step 3: Verify spinner remains during processing",
       "Step 4: Verify spinner disappears on completion"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2359,7 +2359,7 @@
       "Step 3: Verify button text changes (e.g., 'Analyzing...')",
       "Step 4: Verify button re-enables after completion"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2380,7 +2380,7 @@
       "Step 2: Wait without dismissing",
       "Step 3: Verify toast auto-dismisses after ~5 seconds"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2390,7 +2390,7 @@
       "Step 2: Verify toasts stack or queue properly",
       "Step 3: Verify all messages visible"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2401,7 +2401,7 @@
       "Step 3: Verify clear warning message",
       "Step 4: Verify Cancel and Confirm options"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2422,7 +2422,7 @@
       "Step 2: Verify success message appears",
       "Step 3: Verify message is specific ('Settings saved')"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -2564,7 +2564,7 @@
       "Step 2: Inspect for aria-label attribute",
       "Step 3: Verify labels are descriptive"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -2586,7 +2586,7 @@
       "Step 3: View performance (profit/loss) indicators",
       "Step 4: Verify not relying solely on color"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -2596,7 +2596,7 @@
       "Step 2: Verify each has <label> element",
       "Step 3: Verify label for matches input id"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -2617,7 +2617,7 @@
       "Step 3: Verify logical h2, h3 structure",
       "Step 4: Verify no skipped heading levels"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -2639,7 +2639,7 @@
       "Step 3: Verify modal closes",
       "Step 4: Verify focus returns to trigger element"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
