@@ -956,7 +956,7 @@
       "Step 6: Refresh page",
       "Step 7: Verify settings are saved"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -969,7 +969,7 @@
       "Step 5: Verify loading indicator appears",
       "Step 6: Verify success or failure status is displayed"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -981,7 +981,7 @@
       "Step 4: Verify fresh data is fetched",
       "Step 5: Verify cache timestamp is updated"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1046,7 +1046,7 @@
       "Step 6: Confirm reset",
       "Step 7: Verify all settings return to defaults"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1073,7 +1073,7 @@
       "Step 5: Open downloaded file",
       "Step 6: Verify data is correctly formatted"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1084,7 +1084,7 @@
       "Step 3: Verify full markdown report loads",
       "Step 4: Verify all sections are present (summary, charts, news, etc.)"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1314,7 +1314,7 @@
       "Step 3: Verify dropdown contains AAPL, MSFT, GOOGL",
       "Step 4: Verify options are not hardcoded"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1363,7 +1363,7 @@
       "Step 5: Verify page 2 shows next 10",
       "Step 6: Verify page 3 shows remaining 5"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1431,7 +1431,7 @@
       "Step 3: Verify new API calls are made",
       "Step 4: Verify fresh data is returned"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1465,7 +1465,7 @@
       "Step 2: Query performance_checks table",
       "Step 3: Verify new record created with correct data"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1476,7 +1476,7 @@
       "Step 3: Verify actual markdown file downloads",
       "Step 4: Verify file content is correct"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
