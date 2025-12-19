@@ -2968,7 +2968,7 @@
       "Step 3: Repeat for secondary buttons",
       "Step 4: Verify consistent hover behavior"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -2978,7 +2978,7 @@
       "Step 2: Verify border or outline change",
       "Step 3: Verify focus is clearly visible"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -2988,7 +2988,7 @@
       "Step 2: Verify alternating row colors",
       "Step 3: Verify hover highlights on rows"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -3062,7 +3062,7 @@
       "Step 2: Verify Buy indicator is green",
       "Step 3: Verify text 'Buy' is displayed"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -3071,7 +3071,7 @@
       "Step 1: View or create Sell recommendation",
       "Step 2: Verify Sell indicator is red"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -3080,6 +3080,6 @@
       "Step 1: View or create Hold recommendation",
       "Step 2: Verify Hold indicator is yellow/amber"
     ],
-    "passes": false
+    "passes": true
   }
 ]
