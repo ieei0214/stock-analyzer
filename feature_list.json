@@ -1214,7 +1214,7 @@
       "Step 3: After reasonable timeout, verify error appears",
       "Step 4: Verify UI is still responsive"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1248,7 +1248,7 @@
       "Step 3: Verify message about limited data",
       "Step 4: Verify partial analysis still provided if possible"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1259,7 +1259,7 @@
       "Step 3: Verify suggestion to wait before retrying",
       "Step 4: Verify application doesn't crash"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1270,7 +1270,7 @@
       "Step 3: Verify error message about data source",
       "Step 4: Verify suggestion to try again later"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1487,7 +1487,7 @@
       "Step 3: Verify confidence level is displayed",
       "Step 4: Verify reasoning is formatted correctly"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
