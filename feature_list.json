@@ -2936,7 +2936,7 @@
       "Step 3: Verify warning/Hold is yellow (#F59E0B)",
       "Step 4: Verify danger/Sell is red (#EF4444)"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -2947,7 +2947,7 @@
       "Step 3: Verify body text is readable (1rem, line-height 1.5)",
       "Step 4: Verify monospace for tickers and numbers"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -2957,7 +2957,7 @@
       "Step 2: Verify subtle shadow styling",
       "Step 3: Verify consistent card styling throughout"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -3040,7 +3040,7 @@
       "Step 2: Verify yfinance or data source credited",
       "Step 3: Verify last update timestamp shown"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -3052,7 +3052,7 @@
       "Step 4: View empty history",
       "Step 5: Verify similar helpful empty state"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
