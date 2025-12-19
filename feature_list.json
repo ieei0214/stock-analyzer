@@ -1325,7 +1325,7 @@
       "Step 3: Refresh second tab",
       "Step 4: Verify stock appears in second tab"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1578,7 +1578,7 @@
       "Step 3: Refresh Tab 2",
       "Step 4: Verify stock appears in Tab 2"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1791,7 +1791,7 @@
       "Step 3: Verify final destination is correct",
       "Step 4: Verify no errors or broken state"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1857,7 +1857,7 @@
       "Step 4: Refresh search",
       "Step 5: Verify analysis history still exists but stock removed from watchlist"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1890,7 +1890,7 @@
       "Step 3: Return to original tab and refresh",
       "Step 4: Verify new analysis appears"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2047,7 +2047,7 @@
       "Step 2: Ensure no filters applied",
       "Step 3: Verify all analyses are shown"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2087,7 +2087,7 @@
       "Step 2: Verify 'No results' message shown",
       "Step 3: Verify clear filters option available"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2141,7 +2141,7 @@
       "Step 2: Verify analyses from that single day shown",
       "Step 3: Verify no error"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2150,7 +2150,7 @@
       "Step 1: Set end date before start date",
       "Step 2: Verify validation error or automatic swap"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2159,7 +2159,7 @@
       "Step 1: Set date filter with future date",
       "Step 2: Verify no results (or appropriate handling)"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
