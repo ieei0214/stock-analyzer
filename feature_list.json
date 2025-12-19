@@ -419,7 +419,7 @@
       "Step 3: Click cancel button (if present)",
       "Step 4: Verify return to dashboard"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
