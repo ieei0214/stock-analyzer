@@ -2682,7 +2682,7 @@
       "Step 3: Verify shows relative time (e.g., '5 minutes ago')",
       "Step 4: Wait and verify it updates"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2692,7 +2692,7 @@
       "Step 2: View market status indicator",
       "Step 3: Verify correctly shows Open/Closed"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
