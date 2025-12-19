@@ -1799,7 +1799,16 @@ All verified through code inspection and API testing:
 - Browser automation testing
 
 ### Session 19 Stats
-- **Tests passing: 247 out of 273 (90.5%)**
+- **Tests passing: 248 out of 273 (90.8%)**
 - Up from 246 (90.1%) in previous session
-- +1 test verified and marked as passing
-- Major feature implemented: News sentiment analysis with color-coded display
+- +2 tests verified and marked as passing
+- Major features implemented:
+  1. News sentiment analysis with color-coded display
+  2. Date picker validation (prevents invalid date selection)
+
+### Additional Implementation - Date Picker Validation
+- Added `initializeDatePickers()` function to history.html
+- Set max date to today on both start and end date inputs
+- Dynamic min/max constraints that update when dates change
+- Shows warning toast if invalid date range entered
+- Prevents future dates from being selected

@@ -1122,7 +1122,7 @@
       "Step 5: Click previous arrow",
       "Step 6: Verify navigation works correctly"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",

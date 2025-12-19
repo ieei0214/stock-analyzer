@@ -63,30 +63,71 @@
         <div id="reasoning" class="prose max-w-none text-gray-600"></div>
     </div>
 
-    <!-- Charts -->
+    <!-- Charts Carousel -->
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
         <h3 class="text-lg font-semibold text-gray-800 mb-4">Charts</h3>
         <div id="charts-loading" class="text-center py-8 text-gray-500">
             <div class="spinner mx-auto mb-4"></div>
             <p>Loading charts...</p>
         </div>
-        <div id="charts-container" class="grid grid-cols-1 md:grid-cols-2 gap-4 hidden">
-            <div class="bg-gray-50 rounded-lg p-2">
-                <h4 class="text-sm font-medium text-gray-700 mb-2">Price History with Moving Averages</h4>
-                <img id="price-chart" src="" alt="Price Chart" class="w-full rounded">
+        <div id="charts-container" class="hidden">
+            <!-- Carousel wrapper -->
+            <div class="relative">
+                <!-- Previous arrow -->
+                <button id="chart-prev" class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 w-10 h-10 bg-white rounded-full shadow-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" aria-label="Previous chart">
+                    <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                </button>
+
+                <!-- Charts container (slides) -->
+                <div class="overflow-hidden">
+                    <div id="charts-slider" class="flex transition-transform duration-300 ease-in-out">
+                        <div class="w-full flex-shrink-0 px-4" data-chart="price">
+                            <div class="bg-gray-50 rounded-lg p-4">
+                                <h4 class="text-sm font-medium text-gray-700 mb-3 text-center">Price History with Moving Averages</h4>
+                                <img id="price-chart" src="" alt="Price Chart" class="w-full rounded max-h-96 object-contain mx-auto">
+                            </div>
+                        </div>
+                        <div class="w-full flex-shrink-0 px-4" data-chart="rsi">
+                            <div class="bg-gray-50 rounded-lg p-4">
+                                <h4 class="text-sm font-medium text-gray-700 mb-3 text-center">RSI (Relative Strength Index)</h4>
+                                <img id="rsi-chart" src="" alt="RSI Chart" class="w-full rounded max-h-96 object-contain mx-auto">
+                            </div>
+                        </div>
+                        <div class="w-full flex-shrink-0 px-4" data-chart="volume">
+                            <div class="bg-gray-50 rounded-lg p-4">
+                                <h4 class="text-sm font-medium text-gray-700 mb-3 text-center">Volume</h4>
+                                <img id="volume-chart" src="" alt="Volume Chart" class="w-full rounded max-h-96 object-contain mx-auto">
+                            </div>
+                        </div>
+                        <div class="w-full flex-shrink-0 px-4" data-chart="macd">
+                            <div class="bg-gray-50 rounded-lg p-4">
+                                <h4 class="text-sm font-medium text-gray-700 mb-3 text-center">MACD</h4>
+                                <img id="macd-chart" src="" alt="MACD Chart" class="w-full rounded max-h-96 object-contain mx-auto">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Next arrow -->
+                <button id="chart-next" class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 w-10 h-10 bg-white rounded-full shadow-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" aria-label="Next chart">
+                    <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </button>
             </div>
-            <div class="bg-gray-50 rounded-lg p-2">
-                <h4 class="text-sm font-medium text-gray-700 mb-2">RSI (Relative Strength Index)</h4>
-                <img id="rsi-chart" src="" alt="RSI Chart" class="w-full rounded">
+
+            <!-- Carousel indicators -->
+            <div class="flex justify-center mt-4 space-x-2">
+                <button class="chart-indicator w-3 h-3 rounded-full bg-primary" data-index="0" aria-label="View Price chart"></button>
+                <button class="chart-indicator w-3 h-3 rounded-full bg-gray-300" data-index="1" aria-label="View RSI chart"></button>
+                <button class="chart-indicator w-3 h-3 rounded-full bg-gray-300" data-index="2" aria-label="View Volume chart"></button>
+                <button class="chart-indicator w-3 h-3 rounded-full bg-gray-300" data-index="3" aria-label="View MACD chart"></button>
             </div>
-            <div class="bg-gray-50 rounded-lg p-2">
-                <h4 class="text-sm font-medium text-gray-700 mb-2">Volume</h4>
-                <img id="volume-chart" src="" alt="Volume Chart" class="w-full rounded">
-            </div>
-            <div class="bg-gray-50 rounded-lg p-2">
-                <h4 class="text-sm font-medium text-gray-700 mb-2">MACD</h4>
-                <img id="macd-chart" src="" alt="MACD Chart" class="w-full rounded">
-            </div>
+
+            <!-- Chart name label -->
+            <p id="chart-label" class="text-center text-sm text-gray-500 mt-2">1 of 4: Price History</p>
         </div>
         <div id="charts-error" class="hidden text-center py-8 text-gray-500">
             <p>Unable to load charts</p>
@@ -228,6 +269,74 @@
         return colors[rec] || 'bg-gray-100 text-gray-800';
     }
 
+    // Chart carousel state
+    let currentChartIndex = 0;
+    const chartNames = ['Price History', 'RSI', 'Volume', 'MACD'];
+    const totalCharts = 4;
+
+    function updateCarousel() {
+        const slider = document.getElementById('charts-slider');
+        const indicators = document.querySelectorAll('.chart-indicator');
+        const label = document.getElementById('chart-label');
+        const prevBtn = document.getElementById('chart-prev');
+        const nextBtn = document.getElementById('chart-next');
+
+        // Move slider
+        slider.style.transform = `translateX(-${currentChartIndex * 100}%)`;
+
+        // Update indicators
+        indicators.forEach((indicator, index) => {
+            indicator.classList.toggle('bg-primary', index === currentChartIndex);
+            indicator.classList.toggle('bg-gray-300', index !== currentChartIndex);
+        });
+
+        // Update label
+        label.textContent = `${currentChartIndex + 1} of ${totalCharts}: ${chartNames[currentChartIndex]}`;
+
+        // Update button states
+        prevBtn.disabled = currentChartIndex === 0;
+        nextBtn.disabled = currentChartIndex === totalCharts - 1;
+    }
+
+    function setupCarouselControls() {
+        const prevBtn = document.getElementById('chart-prev');
+        const nextBtn = document.getElementById('chart-next');
+        const indicators = document.querySelectorAll('.chart-indicator');
+
+        prevBtn.addEventListener('click', () => {
+            if (currentChartIndex > 0) {
+                currentChartIndex--;
+                updateCarousel();
+            }
+        });
+
+        nextBtn.addEventListener('click', () => {
+            if (currentChartIndex < totalCharts - 1) {
+                currentChartIndex++;
+                updateCarousel();
+            }
+        });
+
+        // Click on indicators
+        indicators.forEach(indicator => {
+            indicator.addEventListener('click', () => {
+                currentChartIndex = parseInt(indicator.dataset.index);
+                updateCarousel();
+            });
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft' && currentChartIndex > 0) {
+                currentChartIndex--;
+                updateCarousel();
+            } else if (e.key === 'ArrowRight' && currentChartIndex < totalCharts - 1) {
+                currentChartIndex++;
+                updateCarousel();
+            }
+        });
+    }
+
     async function loadCharts() {
         const loading = document.getElementById('charts-loading');
         const container = document.getElementById('charts-container');
@@ -250,6 +359,10 @@
 
             loading.classList.add('hidden');
             container.classList.remove('hidden');
+
+            // Setup carousel controls after charts are loaded
+            setupCarouselControls();
+            updateCarousel();
         } catch (err) {
             loading.classList.add('hidden');
             error.classList.remove('hidden');
