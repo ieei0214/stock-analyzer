@@ -251,6 +251,18 @@
                 : `<p>${line}</p>`
         ).join('');
 
+        // Set download report link with analysis ID
+        const downloadBtn = document.getElementById('download-report-btn');
+        if (data.id && data.report_path) {
+            downloadBtn.href = `/api/analysis/${data.id}/report/download`;
+            downloadBtn.classList.remove('opacity-50', 'pointer-events-none');
+            downloadBtn.title = 'Download analysis report';
+        } else {
+            downloadBtn.href = '#';
+            downloadBtn.classList.add('opacity-50', 'pointer-events-none');
+            downloadBtn.title = 'Report not available';
+        }
+
         document.getElementById('results-area').classList.remove('hidden');
 
         // Load charts

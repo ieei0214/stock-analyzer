@@ -313,8 +313,58 @@
         loadHistory();
     });
 
-    document.getElementById('export-btn').addEventListener('click', () => {
-        showToast('Export functionality coming soon', 'info');
+    document.getElementById('export-btn').addEventListener('click', async () => {
+        // Build export URL with current filters
+        const ticker = document.getElementById('filter-ticker').value;
+        const startDate = document.getElementById('filter-start').value;
+        const endDate = document.getElementById('filter-end').value;
+
+        let url = '/api/analyses/export?';
+        const params = [];
+        if (ticker) params.push(`ticker=${ticker}`);
+        if (startDate) params.push(`start_date=${startDate}`);
+        if (endDate) params.push(`end_date=${endDate}`);
+        url += params.join('&');
+
+        try {
+            showToast('Preparing export...', 'info');
+
+            // Fetch the CSV data
+            const response = await fetch(url);
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.detail || 'Export failed');
+            }
+
+            // Get the blob
+            const blob = await response.blob();
+
+            // Create download link
+            const downloadUrl = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = downloadUrl;
+
+            // Get filename from Content-Disposition header or use default
+            const contentDisposition = response.headers.get('Content-Disposition');
+            let filename = 'stock_analyses.csv';
+            if (contentDisposition) {
+                const filenameMatch = contentDisposition.match(/filename=([^;]+)/);
+                if (filenameMatch) {
+                    filename = filenameMatch[1].trim();
+                }
+            }
+
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(downloadUrl);
+
+            showToast('Export complete!', 'success');
+        } catch (err) {
+            showToast('Export failed: ' + err.message, 'error');
+        }
     });
 
     // Initial load

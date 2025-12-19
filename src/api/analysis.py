@@ -301,3 +301,77 @@ async def get_analyzed_tickers():
     """Get list of all tickers that have been analyzed."""
     tickers = await AnalysisDAO.get_unique_tickers()
     return {"tickers": tickers}
+
+
+@router.get("/analyses/export")
+async def export_analyses_csv(
+    ticker: Optional[str] = None,
+    start_date: Optional[datetime] = None,
+    end_date: Optional[datetime] = None
+):
+    """Export analyses to CSV format."""
+    import csv
+    import io
+
+    if ticker:
+        ticker = ticker.strip().upper()
+
+    # Get all analyses matching the filters (no limit for export)
+    analyses = await AnalysisDAO.get_history(
+        ticker=ticker,
+        start_date=start_date,
+        end_date=end_date,
+        limit=1000  # Reasonable max for export
+    )
+
+    if not analyses:
+        raise HTTPException(status_code=404, detail="No analyses found for export")
+
+    # Create CSV in memory
+    output = io.StringIO()
+    writer = csv.writer(output)
+
+    # Write header
+    writer.writerow([
+        "Date",
+        "Ticker",
+        "Recommendation",
+        "Confidence",
+        "Analysis Style",
+        "Price at Analysis",
+        "Current Price",
+        "Gain/Loss %",
+        "LLM Provider",
+        "LLM Model",
+        "Reasoning"
+    ])
+
+    # Write data rows
+    for analysis in analyses:
+        writer.writerow([
+            analysis.analysis_date.strftime("%Y-%m-%d %H:%M") if analysis.analysis_date else "",
+            analysis.ticker,
+            analysis.recommendation,
+            analysis.confidence_level,
+            analysis.analysis_style,
+            f"{analysis.price_at_analysis:.2f}" if analysis.price_at_analysis else "",
+            f"{analysis.current_price:.2f}" if hasattr(analysis, 'current_price') and analysis.current_price else "",
+            f"{analysis.gain_loss_percent:.2f}" if hasattr(analysis, 'gain_loss_percent') and analysis.gain_loss_percent is not None else "",
+            analysis.llm_provider or "",
+            analysis.llm_model or "",
+            (analysis.reasoning or "").replace("\n", " ").replace("\r", "")[:500]  # Truncate long reasoning
+        ])
+
+    csv_content = output.getvalue()
+    output.close()
+
+    # Return as downloadable file
+    filename = f"stock_analyses_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+
+    return PlainTextResponse(
+        content=csv_content,
+        media_type="text/csv",
+        headers={
+            "Content-Disposition": f"attachment; filename={filename}"
+        }
+    )
