@@ -188,19 +188,47 @@ class ReportGenerator:
         if reasoning:
             lines.append("### Analysis Reasoning")
             lines.append("")
+            
+            # Try to parse if it's JSON format
+            import json
+            import re
+            reasoning_text = reasoning
+            
+            # Strip markdown code block markers if present
+            reasoning_text = reasoning_text.replace('```json', '').replace('```', '').strip()
+            
+            # Check if it's JSON
+            if reasoning_text.strip().startswith('{'):
+                try:
+                    parsed = json.loads(reasoning_text)
+                    # Extract just the reasoning field if it exists
+                    if 'reasoning' in parsed:
+                        reasoning_text = parsed['reasoning']
+                except json.JSONDecodeError as e:
+                    # Try to extract partial reasoning from incomplete JSON
+                    match = re.search(r'"reasoning":\s*"([^"]+)', reasoning_text)
+                    if match:
+                        reasoning_text = match.group(1) + "... (incomplete)"
+                    else:
+                        # Can't parse, show error message
+                        lines.append("*Analysis reasoning data is incomplete or malformed.*")
+                        lines.append("")
+                        reasoning_text = None
+            
             # Handle both string and list reasoning
-            if isinstance(reasoning, list):
-                for point in reasoning:
-                    lines.append(f"- {point}")
-            else:
-                # Assume bullet points are newline separated or use as-is
-                for line in reasoning.split('\n'):
-                    line = line.strip()
-                    if line:
-                        if not line.startswith('-') and not line.startswith('*'):
-                            lines.append(f"- {line}")
-                        else:
-                            lines.append(line)
+            if reasoning_text:
+                if isinstance(reasoning_text, list):
+                    for point in reasoning_text:
+                        lines.append(f"- {point}")
+                else:
+                    # Format as bullet points
+                    for line in reasoning_text.split('\n'):
+                        line = line.strip()
+                        if line:
+                            # Remove existing bullets and re-add consistently
+                            line = line.lstrip('-').lstrip('•').lstrip('*').strip()
+                            if line:
+                                lines.append(f"- {line}")
             lines.append("")
 
         lines.append("---")

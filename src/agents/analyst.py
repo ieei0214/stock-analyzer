@@ -347,6 +347,13 @@ DATA AS OF: {stock_data.get('collected_at', datetime.now().isoformat())}
 
             if confidence not in ("High", "Medium", "Low"):
                 confidence = "Medium"
+            
+            # Ensure reasoning is a string, not a nested object
+            if isinstance(reasoning, dict):
+                # If reasoning is a dict, try to extract a text field or convert to string
+                reasoning = reasoning.get("text", str(reasoning))
+            elif not isinstance(reasoning, str):
+                reasoning = str(reasoning)
 
             price = stock_data.get("price", {}).get("current_price", 0)
 
@@ -354,7 +361,7 @@ DATA AS OF: {stock_data.get('collected_at', datetime.now().isoformat())}
                 ticker=stock_data.get("ticker", "UNKNOWN"),
                 recommendation=recommendation,
                 confidence=confidence,
-                reasoning=reasoning,
+                reasoning=reasoning,  # This should now be just the reasoning text string
                 price_at_analysis=price,
                 analysis_style=style,
                 llm_provider=self.provider,
@@ -363,6 +370,7 @@ DATA AS OF: {stock_data.get('collected_at', datetime.now().isoformat())}
 
         except json.JSONDecodeError as e:
             logger.warning(f"Failed to parse LLM response as JSON: {e}")
+            logger.warning(f"Response text: {response_text[:500]}")  # Log first 500 chars
             # Fallback: try to extract information from plain text
             return self._parse_plain_text_response(response_text, stock_data, style)
 

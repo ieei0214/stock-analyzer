@@ -41,9 +41,8 @@ def is_placeholder_key(key: str) -> bool:
 
 async def get_llm_settings():
     """Get LLM configuration from settings."""
-    settings = await SettingsDAO.get_all()
-
-    provider = settings.get("llm_provider", "openai")
+    # Read settings from environment variables (same as settings.py does)
+    provider = os.getenv("LLM_PROVIDER", "openai")
 
     # Get API key from environment (not stored in database for security)
     if provider == "openai":
@@ -55,7 +54,7 @@ async def get_llm_settings():
     if is_placeholder_key(api_key):
         api_key = None
 
-    model = settings.get("model_name", "gpt-4" if provider == "openai" else "gemini-pro")
+    model = os.getenv("MODEL_NAME", "gpt-4" if provider == "openai" else "gemini-pro")
 
     return provider, api_key, model
 

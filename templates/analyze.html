@@ -252,13 +252,53 @@
         recEl.className = `px-4 py-2 rounded-full text-lg font-bold ${colors[data.recommendation] || 'bg-gray-100 text-gray-800'}`;
         recEl.textContent = data.recommendation;
 
-        // Reasoning
-        const reasoning = data.reasoning || 'No detailed reasoning available.';
-        document.getElementById('result-reasoning').innerHTML = reasoning.split('\n').map(line =>
-            line.startsWith('-') || line.startsWith('•')
-                ? `<li>${line.substring(1).trim()}</li>`
-                : `<p>${line}</p>`
-        ).join('');
+        // Reasoning - parse and format properly
+        let reasoning = data.reasoning || 'No detailed reasoning available.';
+        
+        // Strip markdown code block markers if present
+        reasoning = reasoning.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```\s*$/, '').trim();
+        
+        // Check if it looks like JSON (starts with {)
+        if (reasoning.trim().startsWith('{')) {
+            try {
+                const parsed = JSON.parse(reasoning);
+                let formatted = '';
+                
+                // If parsed JSON has reasoning field, extract just that text
+                if (parsed.reasoning) {
+                    const reasoningText = parsed.reasoning;
+                    formatted += '<div><p class="font-semibold text-gray-800 mb-2">Analysis:</p>';
+                    const points = reasoningText.split('\n').filter(line => line.trim());
+                    formatted += '<ul class="list-disc list-inside space-y-1">';
+                    points.forEach(point => {
+                        const cleaned = point.replace(/^[-•]\s*/, '').trim();
+                        if (cleaned) {
+                            formatted += `<li>${cleaned}</li>`;
+                        }
+                    });
+                    formatted += '</ul></div>';
+                    document.getElementById('result-reasoning').innerHTML = formatted;
+                } else {
+                    // JSON but no reasoning field
+                    document.getElementById('result-reasoning').innerHTML = '<p class="text-gray-600">Analysis data is incomplete.</p>';
+                }
+            } catch (e) {
+                // Failed to parse, likely incomplete JSON
+                document.getElementById('result-reasoning').innerHTML = '<p class="text-gray-600">Analysis data is incomplete or malformed.</p>';
+            }
+        } else {
+            // Plain text reasoning, format with bullets
+            const points = reasoning.split('\n').filter(line => line.trim());
+            let formatted = '<ul class="list-disc list-inside space-y-1">';
+            points.forEach(point => {
+                const cleaned = point.replace(/^[-•]\s*/, '').trim();
+                if (cleaned) {
+                    formatted += `<li>${cleaned}</li>`;
+                }
+            });
+            formatted += '</ul>';
+            document.getElementById('result-reasoning').innerHTML = formatted;
+        }
 
         // Set download report link with analysis ID
         const downloadBtn = document.getElementById('download-report-btn');

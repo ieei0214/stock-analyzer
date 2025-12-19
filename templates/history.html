@@ -318,13 +318,13 @@
                     ${getConfidenceBadge(item.confidence_level)}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap font-mono">
-                    ${item.price_at_analysis ? '$' + item.price_at_analysis.toFixed(2) : '-'}
+                    ${item.price_at_analysis != null ? '$' + item.price_at_analysis.toFixed(2) : '-'}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap font-mono">
-                    ${item.current_price ? '$' + item.current_price.toFixed(2) : '-'}
+                    ${item.current_price != null ? '$' + item.current_price.toFixed(2) : '-'}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap font-mono ${getGainLossColor(item.gain_loss_percent)}">
-                    ${item.gain_loss_percent !== null ? (item.gain_loss_percent >= 0 ? '+' : '') + item.gain_loss_percent.toFixed(2) + '%' : '-'}
+                    ${item.gain_loss_percent != null && item.gain_loss_percent !== undefined ? (item.gain_loss_percent >= 0 ? '+' : '') + item.gain_loss_percent.toFixed(2) + '%' : '-'}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <button onclick="event.stopPropagation(); checkPerformance(${item.id})" class="text-primary hover:text-blue-700" title="Check Performance">

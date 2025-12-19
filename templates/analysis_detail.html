@@ -223,9 +223,65 @@
             document.getElementById('confidence').textContent = `${analysis.confidence_level} Confidence`;
             document.getElementById('analysis-date').textContent = new Date(analysis.analysis_date).toLocaleDateString();
 
-            // Reasoning
-            const reasoning = analysis.reasoning || 'No detailed reasoning available.';
-            document.getElementById('reasoning').innerHTML = reasoning.replace(/\n/g, '<br>');
+            // Reasoning - parse and format properly
+            let reasoning = analysis.reasoning || 'No detailed reasoning available.';
+            
+            // Strip markdown code block markers if present  
+            reasoning = reasoning.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```\s*$/, '').trim();
+            
+            // Check if it looks like JSON (starts with {)
+            if (reasoning.trim().startsWith('{')) {
+                try {
+                    const parsed = JSON.parse(reasoning);
+                    
+                    // If parsed JSON has reasoning field, extract just that text
+                    if (parsed.reasoning) {
+                        const reasoningText = parsed.reasoning;
+                        let formatted = '<div><p class="font-semibold text-gray-800 mb-2">Analysis:</p>';
+                        const points = reasoningText.split('\n').filter(line => line.trim());
+                        formatted += '<ul class="list-disc list-inside space-y-2 text-gray-700">';
+                        points.forEach(point => {
+                            const cleaned = point.replace(/^[-•]\s*/, '').trim();
+                            if (cleaned) {
+                                formatted += `<li class="leading-relaxed">${cleaned}</li>`;
+                            }
+                        });
+                        formatted += '</ul></div>';
+                        document.getElementById('reasoning').innerHTML = formatted;
+                    } else {
+                        // JSON but no reasoning field
+                        document.getElementById('reasoning').innerHTML = '<p class="text-gray-600">Analysis data is incomplete.</p>';
+                    }
+                } catch (e) {
+                    // Failed to parse - likely incomplete/truncated JSON
+                    // Try to extract any readable text from it
+                    console.error('Failed to parse reasoning JSON:', e);
+                    const match = reasoning.match(/"reasoning":\s*"([^"]+)/);
+                    if (match && match[1]) {
+                        // Found a reasoning field, extract its partial text
+                        const partialText = match[1];
+                        let formatted = '<div><p class="font-semibold text-gray-800 mb-2">Analysis (partial):</p>';
+                        formatted += `<p class="text-gray-700">${partialText}...</p>`;
+                        formatted += '<p class="text-sm text-yellow-600 mt-2"><em>Note: Analysis data appears to be incomplete.</em></p>';
+                        formatted += '</div>';
+                        document.getElementById('reasoning').innerHTML = formatted;
+                    } else {
+                        document.getElementById('reasoning').innerHTML = '<p class="text-gray-600">Analysis data is incomplete or malformed.</p>';
+                    }
+                }
+            } else {
+                // Plain text reasoning, format with line breaks
+                const points = reasoning.split('\n').filter(line => line.trim());
+                let formatted = '<ul class="list-disc list-inside space-y-2 text-gray-700">';
+                points.forEach(point => {
+                    const cleaned = point.replace(/^[-•]\s*/, '').trim();
+                    if (cleaned) {
+                        formatted += `<li class="leading-relaxed">${cleaned}</li>`;
+                    }
+                });
+                formatted += '</ul>';
+                document.getElementById('reasoning').innerHTML = formatted;
+            }
 
             // Load history, charts, and news
             loadHistory();
