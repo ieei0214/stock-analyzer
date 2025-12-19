@@ -11,9 +11,12 @@ from typing import Optional, List
 from datetime import datetime
 from pydantic import BaseModel
 
+from fastapi.responses import PlainTextResponse
+
 from ..database.dao import AnalysisDAO, StockDAO, StockDataDAO, SettingsDAO
 from ..database.models import AnalysisResult, StockCreate, APIResponse
 from ..agents import DataCollectorAgent, InvestmentAnalystAgent, validate_stock_ticker
+from ..reports.generator import report_generator
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -122,7 +125,30 @@ async def analyze_stock_endpoint(ticker: str, request: AnalyzeRequest):
         analyst = InvestmentAnalystAgent(provider=provider, api_key=api_key, model=model)
         analysis_result = await analyst.analyze(stock_data, request.analysis_style)
 
-        # Step 3: Store the analysis
+        # Step 3: Generate report
+        report_path = None
+        try:
+            analysis_data = {
+                "recommendation": analysis_result.recommendation,
+                "confidence": analysis_result.confidence,
+                "analysis_style": request.analysis_style,
+                "reasoning": analysis_result.reasoning,
+                "price_at_analysis": analysis_result.price_at_analysis,
+                "llm_provider": provider,
+                "llm_model": model,
+            }
+            report_path = report_generator.generate_report(
+                ticker=ticker,
+                stock_data=stock_data,
+                analysis=analysis_data,
+                save_charts=True
+            )
+            logger.info(f"Generated report for {ticker}: {report_path}")
+        except Exception as e:
+            logger.warning(f"Failed to generate report for {ticker}: {e}")
+            # Continue without report - not critical
+
+        # Step 4: Store the analysis
         saved_analysis = await AnalysisDAO.create(
             ticker=ticker,
             recommendation=analysis_result.recommendation,
@@ -132,6 +158,7 @@ async def analyze_stock_endpoint(ticker: str, request: AnalyzeRequest):
             price_at_analysis=analysis_result.price_at_analysis,
             llm_provider=provider,
             llm_model=model,
+            report_path=report_path,
         )
 
         logger.info(f"Analysis complete for {ticker}: {analysis_result.recommendation}")
@@ -194,10 +221,38 @@ async def get_analysis_report(analysis_id: int):
     if not analysis.report_path:
         raise HTTPException(status_code=404, detail="No report available")
 
-    # TODO: Return the actual markdown file content
-    return APIResponse(
-        success=True,
-        data={"report_path": analysis.report_path}
+    # Return the actual markdown file content
+    content = report_generator.get_report_content(analysis.report_path)
+    if not content:
+        raise HTTPException(status_code=404, detail="Report file not found")
+
+    return PlainTextResponse(content=content, media_type="text/markdown")
+
+
+@router.get("/analysis/{analysis_id}/report/download")
+async def download_analysis_report(analysis_id: int):
+    """Download the markdown report for an analysis as a file."""
+    analysis = await AnalysisDAO.get_by_id(analysis_id)
+
+    if not analysis:
+        raise HTTPException(status_code=404, detail="Analysis not found")
+
+    if not analysis.report_path:
+        raise HTTPException(status_code=404, detail="No report available")
+
+    content = report_generator.get_report_content(analysis.report_path)
+    if not content:
+        raise HTTPException(status_code=404, detail="Report file not found")
+
+    # Get filename from path
+    filename = os.path.basename(analysis.report_path)
+
+    return PlainTextResponse(
+        content=content,
+        media_type="text/markdown",
+        headers={
+            "Content-Disposition": f"attachment; filename={analysis.ticker}_{filename}"
+        }
     )
 
 

@@ -223,7 +223,7 @@
       "Step 3: Attempt to access report via direct URL path traversal",
       "Step 4: Verify reports are served through proper API endpoints only"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
