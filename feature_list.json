@@ -1533,7 +1533,7 @@
       "Step 3: Refresh page before submitting",
       "Step 4: Verify appropriate behavior (cleared or preserved)"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1544,7 +1544,7 @@
       "Step 3: Verify no duplicate analysis created",
       "Step 4: Verify appropriate behavior on back navigation"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1556,7 +1556,7 @@
       "Step 4: Open bookmarked URL",
       "Step 5: Verify page loads with filters (if in URL)"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1590,7 +1590,7 @@
       "Step 4: Verify warning about unsaved changes (if implemented)",
       "Step 5: Verify user can choose to stay or leave"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1601,7 +1601,7 @@
       "Step 3: Return to analyze same stock",
       "Step 4: Verify cached data is used (faster load)"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1693,7 +1693,7 @@
       "Step 4: Navigate to saved URL",
       "Step 5: Verify 'not found' message, no crash"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1802,7 +1802,7 @@
       "Step 3: Check data state",
       "Step 4: Verify no corruption (either saved or not)"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1813,7 +1813,7 @@
       "Step 3: Verify only one batch job started",
       "Step 4: Verify stocks not analyzed twice"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1824,7 +1824,7 @@
       "Step 3: Verify form is shown (not resubmission)",
       "Step 4: Verify no duplicate analysis created"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1834,7 +1834,7 @@
       "Step 2: Verify multiple simultaneous tests handled",
       "Step 3: Verify single result displayed"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1902,7 +1902,7 @@
       "Step 4: Trigger cache cleanup",
       "Step 5: Verify expired cache records removed"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1913,7 +1913,7 @@
       "Step 3: Delete analysis (if feature exists)",
       "Step 4: Verify related performance checks handled"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1924,7 +1924,7 @@
       "Step 3: If analysis/report can be deleted",
       "Step 4: Verify file is also removed"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1934,7 +1934,7 @@
       "Step 2: If stock data can be purged/deleted",
       "Step 3: Verify related news records handled"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1945,7 +1945,7 @@
       "Step 3: If analysis can be deleted",
       "Step 4: Verify chart files are also removed"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
