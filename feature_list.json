@@ -2121,7 +2121,7 @@
       "Step 3: Verify date filter still applied",
       "Step 4: Verify ticker filter cleared"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2316,7 +2316,7 @@
       "Step 2: Verify focus moves to error field",
       "Step 3: User can immediately correct"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",

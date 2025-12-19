@@ -197,6 +197,7 @@
         if (!ticker) {
             document.getElementById('ticker-error').textContent = 'Please enter a ticker symbol';
             document.getElementById('ticker-error').classList.remove('hidden');
+            document.getElementById('ticker').focus();
             return;
         }
 

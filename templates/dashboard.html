@@ -235,6 +235,7 @@
         if (!ticker) {
             error.textContent = 'Please enter a ticker symbol';
             error.classList.remove('hidden');
+            input.focus();
             return;
         }
 
@@ -254,6 +255,7 @@
         } catch (err) {
             error.textContent = err.message;
             error.classList.remove('hidden');
+            input.focus();
             showToast(err.message, 'error');
         } finally {
             btn.disabled = false;

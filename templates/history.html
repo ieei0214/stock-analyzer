@@ -29,23 +29,44 @@
     <div class="flex flex-wrap items-end gap-4">
         <div>
             <label for="filter-ticker" class="block text-sm font-medium text-gray-700 mb-1">Ticker</label>
-            <select id="filter-ticker" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary">
-                <option value="">All Tickers</option>
-            </select>
+            <div class="flex items-center gap-1">
+                <select id="filter-ticker" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary">
+                    <option value="">All Tickers</option>
+                </select>
+                <button id="clear-ticker" class="p-2 text-gray-400 hover:text-gray-600 hidden" title="Clear ticker filter" aria-label="Clear ticker filter">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
         </div>
         <div>
             <label for="filter-start" class="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
-            <input type="date" id="filter-start" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary">
+            <div class="flex items-center gap-1">
+                <input type="date" id="filter-start" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary">
+                <button id="clear-start" class="p-2 text-gray-400 hover:text-gray-600 hidden" title="Clear start date" aria-label="Clear start date">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
         </div>
         <div>
             <label for="filter-end" class="block text-sm font-medium text-gray-700 mb-1">End Date</label>
-            <input type="date" id="filter-end" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary">
+            <div class="flex items-center gap-1">
+                <input type="date" id="filter-end" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary">
+                <button id="clear-end" class="p-2 text-gray-400 hover:text-gray-600 hidden" title="Clear end date" aria-label="Clear end date">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
         </div>
         <button id="apply-filters" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-600 transition-colors">
             Apply Filters
         </button>
         <button id="clear-filters" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-            Clear
+            Clear All
         </button>
         <div class="flex-1"></div>
         <button id="export-btn" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors flex items-center space-x-2">
@@ -142,12 +163,25 @@
         window.history.replaceState({}, '', newUrl);
     }
 
+    // Update visibility of clear buttons based on filter values
+    function updateClearButtons() {
+        const tickerValue = document.getElementById('filter-ticker').value;
+        const startValue = document.getElementById('filter-start').value;
+        const endValue = document.getElementById('filter-end').value;
+
+        document.getElementById('clear-ticker').classList.toggle('hidden', !tickerValue);
+        document.getElementById('clear-start').classList.toggle('hidden', !startValue);
+        document.getElementById('clear-end').classList.toggle('hidden', !endValue);
+    }
+
     function applyUrlParams() {
         const params = getUrlParams();
         document.getElementById('filter-ticker').value = params.ticker;
         document.getElementById('filter-start').value = params.start_date;
         document.getElementById('filter-end').value = params.end_date;
         currentPage = params.page;
+        // Update clear button visibility after applying URL params
+        updateClearButtons();
     }
 
     async function loadStats() {
@@ -339,9 +373,37 @@
         document.getElementById('filter-ticker').value = '';
         document.getElementById('filter-start').value = '';
         document.getElementById('filter-end').value = '';
+        updateClearButtons();
         currentPage = 1;
         loadHistory();
     });
+
+    // Individual clear filter buttons
+    document.getElementById('clear-ticker').addEventListener('click', () => {
+        document.getElementById('filter-ticker').value = '';
+        updateClearButtons();
+        currentPage = 1;
+        loadHistory();
+    });
+
+    document.getElementById('clear-start').addEventListener('click', () => {
+        document.getElementById('filter-start').value = '';
+        updateClearButtons();
+        currentPage = 1;
+        loadHistory();
+    });
+
+    document.getElementById('clear-end').addEventListener('click', () => {
+        document.getElementById('filter-end').value = '';
+        updateClearButtons();
+        currentPage = 1;
+        loadHistory();
+    });
+
+    // Update clear buttons when filter values change
+    document.getElementById('filter-ticker').addEventListener('change', updateClearButtons);
+    document.getElementById('filter-start').addEventListener('change', updateClearButtons);
+    document.getElementById('filter-end').addEventListener('change', updateClearButtons);
 
     document.getElementById('prev-page').addEventListener('click', () => {
         if (currentPage > 1) {
