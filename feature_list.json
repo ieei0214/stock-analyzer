@@ -814,7 +814,7 @@
       "Step 3: Verify data matches SEC filings or known insider trades",
       "Step 4: Verify not mock insider data"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",

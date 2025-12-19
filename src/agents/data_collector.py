@@ -407,13 +407,33 @@ class DataCollectorAgent:
 
             transactions = []
             for idx, row in insider_transactions.head(20).iterrows():
+                # Handle shares - check for nan values
+                shares_val = row.get("Shares", row.get("shares", 0))
+                if pd.isna(shares_val):
+                    shares = 0
+                else:
+                    try:
+                        shares = int(shares_val)
+                    except (ValueError, TypeError):
+                        shares = 0
+
+                # Handle value - check for nan values
+                value_val = row.get("Value", row.get("value", 0))
+                if pd.isna(value_val):
+                    value = 0.0
+                else:
+                    try:
+                        value = float(value_val)
+                    except (ValueError, TypeError):
+                        value = 0.0
+
                 transactions.append({
-                    "insider": row.get("Insider Trading", row.get("insider", "Unknown")),
-                    "relation": row.get("Relationship", row.get("relationship", "")),
-                    "date": str(row.get("Start Date", row.get("startDate", ""))),
-                    "transaction": row.get("Transaction", row.get("transaction", "")),
-                    "shares": int(row.get("Shares", row.get("shares", 0))) if row.get("Shares") or row.get("shares") else 0,
-                    "value": float(row.get("Value", row.get("value", 0))) if row.get("Value") or row.get("value") else 0,
+                    "insider": str(row.get("Insider Trading", row.get("insider", "Unknown")) or "Unknown"),
+                    "relation": str(row.get("Relationship", row.get("relationship", "")) or ""),
+                    "date": str(row.get("Start Date", row.get("startDate", "")) or ""),
+                    "transaction": str(row.get("Transaction", row.get("transaction", "")) or ""),
+                    "shares": shares,
+                    "value": value,
                 })
 
             return transactions

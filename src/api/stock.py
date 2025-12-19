@@ -107,6 +107,8 @@ async def get_stock_data(ticker: str, data_type: Optional[str] = None):
                 fresh_data = collector.get_news()
             elif data_type == "analyst":
                 fresh_data = collector.get_analyst_ratings()
+            elif data_type == "insider":
+                fresh_data = collector.get_insider_trading()
             else:
                 raise HTTPException(status_code=400, detail=f"Unknown data type: {data_type}")
 
@@ -123,7 +125,7 @@ async def get_stock_data(ticker: str, data_type: Optional[str] = None):
             raise HTTPException(status_code=500, detail=str(e))
 
     # Return all cached data types
-    data_types = ["price_history", "fundamentals", "technicals", "news", "analyst"]
+    data_types = ["price_history", "fundamentals", "technicals", "news", "analyst", "insider"]
     result = {"ticker": ticker, "data": {}}
 
     for dt in data_types:
@@ -160,6 +162,7 @@ async def refresh_stock_data(ticker: str):
         await StockDataDAO.save(ticker, "technicals", stock_data.get("technicals", {}), cache_hours)
         await StockDataDAO.save(ticker, "news", stock_data.get("news", []), cache_hours)
         await StockDataDAO.save(ticker, "analyst", stock_data.get("analyst", {}), cache_hours)
+        await StockDataDAO.save(ticker, "insider", stock_data.get("insider_trading", []), cache_hours)
 
         # Update stock info in database
         company_info = stock_data.get("company", {})
