@@ -34,15 +34,15 @@
 </div>
 
 <!-- Actions Row -->
-<div class="flex justify-between items-center mb-4">
+<div class="flex flex-wrap justify-between items-center mb-4 gap-2">
     <div class="text-sm text-gray-500">
         <span id="watchlist-count">0</span> stocks in watchlist
     </div>
-    <div class="flex items-center space-x-2">
+    <div class="flex flex-wrap items-center gap-2">
         <a
             id="export-btn"
             href="/api/watchlist/export"
-            class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium flex items-center space-x-2"
+            class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium flex items-center space-x-2 touch-target"
             download="watchlist.csv"
             title="Export watchlist to CSV"
         >
@@ -53,15 +53,31 @@
         </a>
         <button
             id="analyze-all-btn"
-            class="px-4 py-2 bg-success text-white rounded-lg hover:bg-green-600 transition-colors font-medium flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            class="px-4 py-2 bg-success text-white rounded-lg hover:bg-green-600 transition-colors font-medium flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed touch-target"
             disabled
         >
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg id="analyze-all-icon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
             </svg>
-            <span>Analyze All</span>
+            <span class="spinner hidden" id="analyze-all-spinner"></span>
+            <span id="analyze-all-text">Analyze All</span>
         </button>
     </div>
+</div>
+
+<!-- Task Progress Banner (hidden by default) -->
+<div id="task-progress-banner" class="hidden bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+    <div class="flex items-center justify-between mb-2">
+        <div class="flex items-center space-x-2">
+            <div class="spinner"></div>
+            <span id="task-progress-message" class="text-blue-700 font-medium">Analyzing stocks...</span>
+        </div>
+        <button id="cancel-task-btn" class="text-blue-600 hover:text-blue-800 text-sm">Cancel</button>
+    </div>
+    <div class="w-full bg-blue-200 rounded-full h-2">
+        <div id="task-progress-bar" class="bg-blue-600 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+    </div>
+    <p id="task-progress-detail" class="text-sm text-blue-600 mt-1">0 of 0 complete</p>
 </div>
 
 <!-- Watchlist Table -->
@@ -286,7 +302,11 @@
         window.location.href = `/analyze?ticker=${ticker}`;
     }
 
-    // Analyze all
+    // Task polling state
+    let currentTaskId = null;
+    let pollInterval = null;
+
+    // Analyze all with task polling
     document.getElementById('analyze-all-btn').addEventListener('click', async () => {
         const confirmed = await showConfirm(
             'Analyze All Stocks',
@@ -295,11 +315,112 @@
 
         if (!confirmed) return;
 
+        const btn = document.getElementById('analyze-all-btn');
+        const icon = document.getElementById('analyze-all-icon');
+        const spinner = document.getElementById('analyze-all-spinner');
+        const text = document.getElementById('analyze-all-text');
+
+        btn.disabled = true;
+        icon.classList.add('hidden');
+        spinner.classList.remove('hidden');
+        text.textContent = 'Starting...';
+
         try {
             const result = await api('/api/watchlist/analyze-all', { method: 'POST' });
+
+            // Get task ID from response and start polling
+            if (result.data && result.data.task_id) {
+                currentTaskId = result.data.task_id;
+                const totalStocks = result.data.tickers ? result.data.tickers.length : 0;
+                startTaskPolling(currentTaskId, totalStocks);
+            }
+
             showToast(result.message, 'success');
         } catch (err) {
             showToast(err.message, 'error');
+            resetAnalyzeButton();
+        }
+    });
+
+    function startTaskPolling(taskId, totalStocks) {
+        // Show progress banner
+        const banner = document.getElementById('task-progress-banner');
+        const progressBar = document.getElementById('task-progress-bar');
+        const progressMessage = document.getElementById('task-progress-message');
+        const progressDetail = document.getElementById('task-progress-detail');
+
+        banner.classList.remove('hidden');
+        progressBar.style.width = '0%';
+        progressDetail.textContent = `0 of ${totalStocks} complete`;
+
+        // Start polling every 1 second
+        pollInterval = setInterval(async () => {
+            try {
+                const status = await api(`/api/tasks/${taskId}/status`);
+
+                // Update progress UI
+                progressBar.style.width = `${status.progress}%`;
+                progressMessage.textContent = status.message || 'Analyzing stocks...';
+
+                const completed = Math.floor((status.progress / 100) * totalStocks);
+                progressDetail.textContent = `${completed} of ${totalStocks} complete`;
+
+                // Check if task is done
+                if (status.status === 'completed') {
+                    stopPolling();
+                    banner.classList.add('hidden');
+                    resetAnalyzeButton();
+                    showToast('All stocks analyzed successfully!', 'success');
+                    loadWatchlist(); // Refresh the watchlist
+                } else if (status.status === 'failed') {
+                    stopPolling();
+                    banner.classList.add('hidden');
+                    resetAnalyzeButton();
+                    showToast('Analysis failed: ' + (status.message || 'Unknown error'), 'error');
+                } else if (status.status === 'cancelled') {
+                    stopPolling();
+                    banner.classList.add('hidden');
+                    resetAnalyzeButton();
+                    showToast('Analysis cancelled', 'warning');
+                }
+            } catch (err) {
+                // Task might be done and removed, stop polling
+                stopPolling();
+                banner.classList.add('hidden');
+                resetAnalyzeButton();
+            }
+        }, 1000);
+    }
+
+    function stopPolling() {
+        if (pollInterval) {
+            clearInterval(pollInterval);
+            pollInterval = null;
+        }
+        currentTaskId = null;
+    }
+
+    function resetAnalyzeButton() {
+        const btn = document.getElementById('analyze-all-btn');
+        const icon = document.getElementById('analyze-all-icon');
+        const spinner = document.getElementById('analyze-all-spinner');
+        const text = document.getElementById('analyze-all-text');
+
+        btn.disabled = watchlistData.length === 0;
+        icon.classList.remove('hidden');
+        spinner.classList.add('hidden');
+        text.textContent = 'Analyze All';
+    }
+
+    // Cancel task button
+    document.getElementById('cancel-task-btn').addEventListener('click', async () => {
+        if (!currentTaskId) return;
+
+        try {
+            await api(`/api/tasks/${currentTaskId}/cancel`, { method: 'POST' });
+            showToast('Task cancellation requested', 'info');
+        } catch (err) {
+            showToast('Failed to cancel task: ' + err.message, 'error');
         }
     });
 
