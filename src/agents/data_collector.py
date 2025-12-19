@@ -323,6 +323,46 @@ class DataCollectorAgent:
             "recent_recommendations": rec_list,
         }
 
+    def _analyze_headline_sentiment(self, headline: str) -> str:
+        """
+        Analyze sentiment of a news headline using keyword matching.
+        Returns 'Positive', 'Negative', or 'Neutral'.
+        """
+        if not headline:
+            return "Neutral"
+
+        headline_lower = headline.lower()
+
+        # Positive keywords (financial/stock context)
+        positive_keywords = [
+            'surge', 'soar', 'rally', 'gain', 'jump', 'rise', 'up', 'high', 'record',
+            'beat', 'exceed', 'outperform', 'strong', 'growth', 'profit', 'bullish',
+            'upgrade', 'buy', 'breakout', 'boost', 'win', 'success', 'best', 'top',
+            'positive', 'optimistic', 'recommend', 'opportunity', 'momentum',
+            'advance', 'improve', 'recover', 'rebound', 'milestone', 'innovation'
+        ]
+
+        # Negative keywords (financial/stock context)
+        negative_keywords = [
+            'fall', 'drop', 'decline', 'plunge', 'crash', 'tumble', 'slide', 'sink',
+            'miss', 'loss', 'lose', 'weak', 'bearish', 'downgrade', 'sell', 'warning',
+            'risk', 'concern', 'worry', 'fear', 'trouble', 'problem', 'crisis',
+            'cut', 'slash', 'layoff', 'lawsuit', 'investigation', 'fraud', 'scandal',
+            'worse', 'worst', 'struggle', 'fail', 'bankruptcy', 'debt', 'default'
+        ]
+
+        # Count matches
+        positive_count = sum(1 for word in positive_keywords if word in headline_lower)
+        negative_count = sum(1 for word in negative_keywords if word in headline_lower)
+
+        # Determine sentiment
+        if positive_count > negative_count:
+            return "Positive"
+        elif negative_count > positive_count:
+            return "Negative"
+        else:
+            return "Neutral"
+
     def get_news(self, limit: int = 10) -> List[Dict[str, Any]]:
         """Get recent news headlines for the stock."""
         try:
@@ -384,6 +424,9 @@ class DataCollectorAgent:
                     if resolutions and len(resolutions) > 0:
                         thumbnail = resolutions[0].get("url")
 
+                # Analyze sentiment based on headline keywords
+                sentiment = self._analyze_headline_sentiment(title)
+
                 news_list.append({
                     "title": title or "",
                     "publisher": publisher or "",
@@ -391,6 +434,7 @@ class DataCollectorAgent:
                     "published_at": published_at,
                     "type": item.get("type", ""),
                     "thumbnail": thumbnail,
+                    "sentiment": sentiment,
                 })
 
             return news_list

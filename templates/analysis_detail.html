@@ -93,6 +93,27 @@
         </div>
     </div>
 
+    <!-- Recent News with Sentiment -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">Recent News</h3>
+        <div id="news-loading" class="text-center py-8 text-gray-500">
+            <div class="spinner mx-auto mb-4"></div>
+            <p>Loading news...</p>
+        </div>
+        <div id="news-container" class="space-y-3 hidden">
+            <!-- News items will be inserted here -->
+        </div>
+        <div id="news-empty" class="hidden text-center py-8 text-gray-500">
+            <svg class="w-12 h-12 text-gray-300 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path>
+            </svg>
+            <p>No recent news available</p>
+        </div>
+        <div id="news-error" class="hidden text-center py-8 text-gray-500">
+            <p>Unable to load news</p>
+        </div>
+    </div>
+
     <!-- Analysis History -->
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <h3 class="text-lg font-semibold text-gray-800 mb-4">Analysis History</h3>
@@ -165,9 +186,10 @@
             const reasoning = analysis.reasoning || 'No detailed reasoning available.';
             document.getElementById('reasoning').innerHTML = reasoning.replace(/\n/g, '<br>');
 
-            // Load history and charts
+            // Load history, charts, and news
             loadHistory();
             loadCharts();
+            loadNews();
 
         } catch (err) {
             loading.classList.add('hidden');
@@ -233,6 +255,91 @@
             error.classList.remove('hidden');
             console.error('Failed to load charts:', err);
         }
+    }
+
+    async function loadNews() {
+        const loading = document.getElementById('news-loading');
+        const container = document.getElementById('news-container');
+        const empty = document.getElementById('news-empty');
+        const error = document.getElementById('news-error');
+
+        try {
+            const response = await api(`/api/stock/${ticker}/data?data_type=news`);
+            const news = response.data || [];
+
+            loading.classList.add('hidden');
+
+            if (news.length === 0) {
+                empty.classList.remove('hidden');
+                return;
+            }
+
+            container.classList.remove('hidden');
+            container.innerHTML = news.slice(0, 8).map(item => `
+                <div class="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                    <div class="flex-shrink-0">
+                        ${getSentimentBadge(item.sentiment)}
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <a href="${item.link || '#'}" target="_blank" rel="noopener noreferrer"
+                           class="text-sm font-medium text-gray-800 hover:text-primary line-clamp-2 ${item.link ? '' : 'pointer-events-none'}">
+                            ${escapeHtml(item.title || 'No title')}
+                        </a>
+                        <div class="flex items-center mt-1 text-xs text-gray-500 space-x-2">
+                            <span>${escapeHtml(item.publisher || 'Unknown source')}</span>
+                            <span>•</span>
+                            <span>${formatNewsDate(item.published_at)}</span>
+                        </div>
+                    </div>
+                    ${item.thumbnail ? `
+                        <div class="flex-shrink-0">
+                            <img src="${item.thumbnail}" alt="" class="w-16 h-12 object-cover rounded">
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+
+        } catch (err) {
+            loading.classList.add('hidden');
+            error.classList.remove('hidden');
+            console.error('Failed to load news:', err);
+        }
+    }
+
+    function getSentimentBadge(sentiment) {
+        const colors = {
+            'Positive': 'bg-green-100 text-green-800 border-green-200',
+            'Negative': 'bg-red-100 text-red-800 border-red-200',
+            'Neutral': 'bg-gray-100 text-gray-600 border-gray-200'
+        };
+        const icons = {
+            'Positive': '↑',
+            'Negative': '↓',
+            'Neutral': '−'
+        };
+        const colorClass = colors[sentiment] || colors['Neutral'];
+        const icon = icons[sentiment] || icons['Neutral'];
+        return `<span class="inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold border ${colorClass}" title="${sentiment} sentiment">${icon}</span>`;
+    }
+
+    function formatNewsDate(dateStr) {
+        if (!dateStr) return 'Unknown date';
+        const date = new Date(dateStr);
+        const now = new Date();
+        const diff = now - date;
+        const hours = Math.floor(diff / 3600000);
+        const days = Math.floor(diff / 86400000);
+
+        if (hours < 1) return 'Just now';
+        if (hours < 24) return `${hours}h ago`;
+        if (days < 7) return `${days}d ago`;
+        return date.toLocaleDateString();
+    }
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
     }
 
     loadAnalysis();
