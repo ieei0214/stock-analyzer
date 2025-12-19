@@ -116,6 +116,40 @@
     let sortField = 'analysis_date';
     let sortOrder = 'desc';
 
+    // URL Parameter Functions
+    function getUrlParams() {
+        const params = new URLSearchParams(window.location.search);
+        return {
+            ticker: params.get('ticker') || '',
+            start_date: params.get('start_date') || '',
+            end_date: params.get('end_date') || '',
+            page: parseInt(params.get('page')) || 1
+        };
+    }
+
+    function updateUrlParams() {
+        const ticker = document.getElementById('filter-ticker').value;
+        const startDate = document.getElementById('filter-start').value;
+        const endDate = document.getElementById('filter-end').value;
+
+        const params = new URLSearchParams();
+        if (ticker) params.set('ticker', ticker);
+        if (startDate) params.set('start_date', startDate);
+        if (endDate) params.set('end_date', endDate);
+        if (currentPage > 1) params.set('page', currentPage);
+
+        const newUrl = params.toString() ? `${window.location.pathname}?${params.toString()}` : window.location.pathname;
+        window.history.replaceState({}, '', newUrl);
+    }
+
+    function applyUrlParams() {
+        const params = getUrlParams();
+        document.getElementById('filter-ticker').value = params.ticker;
+        document.getElementById('filter-start').value = params.start_date;
+        document.getElementById('filter-end').value = params.end_date;
+        currentPage = params.page;
+    }
+
     async function loadStats() {
         try {
             const stats = await api('/api/performance/stats');
@@ -185,6 +219,9 @@
                 renderTable(data);
                 updatePagination();
             }
+
+            // Update URL with current filter state
+            updateUrlParams();
         } catch (err) {
             loading.classList.add('hidden');
             showToast('Failed to load history: ' + err.message, 'error');
@@ -372,9 +409,14 @@
         }
     });
 
-    // Initial load
-    loadStats();
-    loadTickers();
-    loadHistory();
+    // Initial load - apply URL params first, then load data
+    async function initializePage() {
+        await loadTickers();  // Load tickers first so we can set the select value
+        applyUrlParams();     // Apply URL params to filter fields
+        loadStats();
+        loadHistory();
+    }
+
+    initializePage();
 </script>
 {% endblock %}

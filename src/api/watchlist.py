@@ -5,7 +5,10 @@ Provides endpoints for managing the stock watchlist.
 """
 
 import logging
+import csv
+import io
 from fastapi import APIRouter, HTTPException, BackgroundTasks
+from fastapi.responses import StreamingResponse
 from typing import List
 from pydantic import BaseModel
 
@@ -168,3 +171,63 @@ async def get_watchlist_count():
     """Get the number of stocks in the watchlist."""
     count = await WatchlistDAO.count()
     return {"count": count}
+
+
+@router.get("/export")
+async def export_watchlist_csv():
+    """Export the watchlist to a CSV file."""
+    items = await WatchlistDAO.get_all()
+
+    # Enrich each item with current price data
+    enriched_items = []
+    for item in items:
+        try:
+            enriched = await enrich_watchlist_item(item)
+            enriched_items.append(enriched)
+        except Exception as e:
+            logger.warning(f"Failed to enrich {item.ticker}: {e}")
+            enriched_items.append(item)
+
+    # Create CSV in memory
+    output = io.StringIO()
+    writer = csv.writer(output)
+
+    # Write header
+    writer.writerow([
+        "Ticker",
+        "Company Name",
+        "Current Price",
+        "Change %",
+        "Last Recommendation",
+        "Last Analyzed",
+        "Added At"
+    ])
+
+    # Write data rows
+    for item in enriched_items:
+        price_str = f"${item.current_price:.2f}" if item.current_price else ""
+        change_str = f"{item.price_change_percent:.2f}%" if item.price_change_percent else ""
+        last_analyzed = item.last_analyzed.isoformat() if item.last_analyzed else ""
+        added_at = item.added_at.isoformat() if item.added_at else ""
+
+        writer.writerow([
+            item.ticker,
+            item.company_name or "",
+            price_str,
+            change_str,
+            item.last_recommendation or "",
+            last_analyzed,
+            added_at
+        ])
+
+    # Reset stream position
+    output.seek(0)
+
+    # Return as streaming response with CSV content type
+    return StreamingResponse(
+        iter([output.getvalue()]),
+        media_type="text/csv",
+        headers={
+            "Content-Disposition": "attachment; filename=watchlist.csv"
+        }
+    )

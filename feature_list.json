@@ -1613,7 +1613,7 @@
       "Step 4: Click back to history",
       "Step 5: Verify filter is still applied"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1625,7 +1625,7 @@
       "Step 4: Return to history",
       "Step 5: Verify page 3 is still selected"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1703,7 +1703,7 @@
       "Step 2: Verify ticker filter dropdown shows AAPL",
       "Step 3: Verify table shows only AAPL analyses"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1714,7 +1714,7 @@
       "Step 3: Open URL in new browser/tab",
       "Step 4: Verify same filters are applied"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2110,7 +2110,7 @@
       "Step 3: Navigate back to history",
       "Step 4: Verify filter is still applied"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2606,7 +2606,7 @@
       "Step 2: Verify error has role='alert' or aria-live",
       "Step 3: Verify error associated with input"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -2820,7 +2820,7 @@
       "Step 3: Verify CSV file downloads",
       "Step 4: Verify all stocks in file"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
