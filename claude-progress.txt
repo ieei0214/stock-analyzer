@@ -1668,3 +1668,32 @@ All verified through code inspection and API testing:
 - **Tests passing: 243 out of 273 (89.0%)**
 - +7 tests newly passing
 - Git commit completed
+
+### Session 18 Continued
+
+## Additional Improvements
+
+### 1. Added Individual Filter Clear Buttons
+- Added small (x) buttons next to each filter on history page
+- Buttons show/hide based on whether filter has a value
+- Allows clearing individual filters without affecting others
+
+### 2. Added Focus on Validation Error
+- Dashboard: focus moves to ticker input when validation fails
+- Analyze page: focus moves to ticker input when validation fails
+- Improves keyboard accessibility
+
+## Additional Tests Marked as Passing
+1. L. Clear individual filter works
+2. M. Form focus on error field
+
+## Updated Test Status
+- Total Tests: 273
+- Passing: 245
+- Failing: 28
+- Progress: 89.7%
+
+### Session 18 Final Stats
+- **Tests passing: 245 out of 273 (89.7%)**
+- +9 tests total this session (from 236 to 245)
+- 2 git commits completed
