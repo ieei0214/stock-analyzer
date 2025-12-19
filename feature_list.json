@@ -91,7 +91,7 @@
       "Step 4: Verify helpful message about waiting is shown",
       "Step 5: Verify application doesn't crash on rate limit"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -141,7 +141,7 @@
       "Step 4: Verify application suggests troubleshooting steps",
       "Step 5: Verify no technical stack traces shown to user"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -153,7 +153,7 @@
       "Step 4: Verify UI remains responsive after timeout",
       "Step 5: Verify retry option is available"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -562,7 +562,7 @@
       "Step 4: Navigate to history page",
       "Step 5: Verify analysis for 'MSFT' exists with same data"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -680,7 +680,7 @@
       "Step 3: Trigger performance check",
       "Step 4: Verify gain/loss % is calculated correctly from real prices"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -704,7 +704,7 @@
       "Step 4: Verify charts in report match UI charts",
       "Step 5: Verify not template/mock content"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -715,7 +715,7 @@
       "Step 3: After cache expires, trigger refresh",
       "Step 4: Verify new data is fetched with updated timestamps"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -727,7 +727,7 @@
       "Step 4: Verify only AAPL analyses shown",
       "Step 5: Verify MSFT and GOOGL analyses are hidden"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -792,7 +792,7 @@
       "Step 3: Verify reasoning is different and specific to each stock",
       "Step 4: Verify not using template/generic responses"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -836,7 +836,7 @@
       "Step 3: Manually calculate expected gain/loss %",
       "Step 4: Verify displayed percentage matches calculation"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -847,7 +847,7 @@
       "Step 3: Open CSV file",
       "Step 4: Verify CSV data matches UI display exactly"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -913,7 +913,7 @@
       "Step 9: Verify 'Add to Watchlist' button is available",
       "Step 10: Verify 'Download Report' link is available"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -928,7 +928,7 @@
       "Step 7: Wait for completion",
       "Step 8: Verify all 3 stocks have updated analysis data"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -942,7 +942,7 @@
       "Step 6: Verify gain/loss is calculated and displayed",
       "Step 7: Verify performance check is saved to database"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -993,7 +993,7 @@
       "Step 4: Verify task stops (or finishes current item)",
       "Step 5: Verify appropriate message is shown"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1060,7 +1060,7 @@
       "Step 6: Verify analysis runs with different style",
       "Step 7: Verify style is recorded in analysis history"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1098,7 +1098,7 @@
       "Step 6: Verify analysis completes with Gemini",
       "Step 7: Verify provider is recorded in analysis"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1134,7 +1134,7 @@
       "Step 4: Verify no technical stack trace shown",
       "Step 5: Verify application remains functional"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
