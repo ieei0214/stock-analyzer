@@ -7,10 +7,13 @@ Provides endpoints for managing the stock watchlist.
 import logging
 import csv
 import io
+import asyncio
+import time
 from fastapi import APIRouter, HTTPException, BackgroundTasks
 from fastapi.responses import StreamingResponse
-from typing import List
+from typing import List, Dict, Any
 from pydantic import BaseModel
+from concurrent.futures import ThreadPoolExecutor
 
 from ..database.dao import WatchlistDAO, StockDAO
 from ..database.models import WatchlistItem, WatchlistItemCreate, APIResponse, StockCreate
@@ -20,20 +23,61 @@ from .tasks import create_task, update_task, complete_task, fail_task
 router = APIRouter()
 logger = logging.getLogger(__name__)
 
+# Price cache for performance - 60 second TTL
+_price_cache: Dict[str, Dict[str, Any]] = {}
+_price_cache_time: Dict[str, float] = {}
+PRICE_CACHE_TTL = 60  # seconds
+
+# Thread pool for parallel yfinance calls
+_executor = ThreadPoolExecutor(max_workers=10)
+
 
 class AddStockRequest(BaseModel):
     """Request model for adding a stock."""
     ticker: str
 
 
+def _fetch_price_sync(ticker: str) -> Dict[str, Any]:
+    """Fetch price data synchronously (for thread pool)."""
+    try:
+        collector = DataCollectorAgent(ticker)
+        price_data = collector.get_current_price()
+        return {
+            "current_price": price_data.get("current_price"),
+            "price_change_percent": price_data.get("change_percent")
+        }
+    except Exception as e:
+        logger.warning(f"Failed to get price data for {ticker}: {e}")
+        return {}
+
+
+async def get_cached_price(ticker: str) -> Dict[str, Any]:
+    """Get price data from cache or fetch if expired."""
+    current_time = time.time()
+
+    # Check if cache is valid
+    if ticker in _price_cache:
+        cache_time = _price_cache_time.get(ticker, 0)
+        if current_time - cache_time < PRICE_CACHE_TTL:
+            return _price_cache[ticker]
+
+    # Fetch fresh data using thread pool
+    loop = asyncio.get_event_loop()
+    price_data = await loop.run_in_executor(_executor, _fetch_price_sync, ticker)
+
+    # Update cache
+    _price_cache[ticker] = price_data
+    _price_cache_time[ticker] = current_time
+
+    return price_data
+
+
 async def enrich_watchlist_item(item: WatchlistItem) -> WatchlistItem:
     """Enrich a watchlist item with current price data."""
     try:
-        collector = DataCollectorAgent(item.ticker)
-        price_data = collector.get_current_price()
-
+        price_data = await get_cached_price(item.ticker)
         item.current_price = price_data.get("current_price")
-        item.price_change_percent = price_data.get("change_percent")
+        item.price_change_percent = price_data.get("price_change_percent")
     except Exception as e:
         logger.warning(f"Failed to get price data for {item.ticker}: {e}")
 
@@ -45,17 +89,19 @@ async def get_watchlist():
     """Get all stocks in the watchlist with enriched data."""
     items = await WatchlistDAO.get_all()
 
-    # Enrich each item with current price data
-    enriched_items = []
-    for item in items:
+    if not items:
+        return []
+
+    # Enrich all items in parallel using asyncio.gather
+    async def safe_enrich(item):
         try:
-            enriched = await enrich_watchlist_item(item)
-            enriched_items.append(enriched)
+            return await enrich_watchlist_item(item)
         except Exception as e:
             logger.warning(f"Failed to enrich {item.ticker}: {e}")
-            enriched_items.append(item)
+            return item
 
-    return enriched_items
+    enriched_items = await asyncio.gather(*[safe_enrich(item) for item in items])
+    return list(enriched_items)
 
 
 @router.post("", response_model=WatchlistItem)
@@ -178,15 +224,16 @@ async def export_watchlist_csv():
     """Export the watchlist to a CSV file."""
     items = await WatchlistDAO.get_all()
 
-    # Enrich each item with current price data
-    enriched_items = []
-    for item in items:
+    # Enrich all items in parallel
+    async def safe_enrich(item):
         try:
-            enriched = await enrich_watchlist_item(item)
-            enriched_items.append(enriched)
+            return await enrich_watchlist_item(item)
         except Exception as e:
             logger.warning(f"Failed to enrich {item.ticker}: {e}")
-            enriched_items.append(item)
+            return item
+
+    enriched_items = await asyncio.gather(*[safe_enrich(item) for item in items]) if items else []
+    enriched_items = list(enriched_items)
 
     # Create CSV in memory
     output = io.StringIO()

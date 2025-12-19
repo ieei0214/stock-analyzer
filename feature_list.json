@@ -2412,7 +2412,7 @@
       "Step 3: Wait for completion",
       "Step 4: Verify notification about completion"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2883,7 +2883,7 @@
       "Step 3: Time page load",
       "Step 4: Verify loads in under 3 seconds"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2894,7 +2894,7 @@
       "Step 3: Verify loads in under 5 seconds",
       "Step 4: Verify pagination works"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",

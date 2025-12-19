@@ -332,6 +332,11 @@
             if (result.data && result.data.task_id) {
                 currentTaskId = result.data.task_id;
                 const totalStocks = result.data.tickers ? result.data.tickers.length : 0;
+                const tickers = result.data.tickers || [];
+
+                // Store in localStorage for cross-page notification
+                setBackgroundTask(currentTaskId, tickers);
+
                 startTaskPolling(currentTaskId, totalStocks);
             }
 
@@ -368,17 +373,20 @@
                 // Check if task is done
                 if (status.status === 'completed') {
                     stopPolling();
+                    clearBackgroundTask(); // Clear localStorage
                     banner.classList.add('hidden');
                     resetAnalyzeButton();
                     showToast('All stocks analyzed successfully!', 'success');
                     loadWatchlist(); // Refresh the watchlist
                 } else if (status.status === 'failed') {
                     stopPolling();
+                    clearBackgroundTask(); // Clear localStorage
                     banner.classList.add('hidden');
                     resetAnalyzeButton();
                     showToast('Analysis failed: ' + (status.message || 'Unknown error'), 'error');
                 } else if (status.status === 'cancelled') {
                     stopPolling();
+                    clearBackgroundTask(); // Clear localStorage
                     banner.classList.add('hidden');
                     resetAnalyzeButton();
                     showToast('Analysis cancelled', 'warning');
@@ -386,6 +394,7 @@
             } catch (err) {
                 // Task might be done and removed, stop polling
                 stopPolling();
+                clearBackgroundTask(); // Clear localStorage
                 banner.classList.add('hidden');
                 resetAnalyzeButton();
             }

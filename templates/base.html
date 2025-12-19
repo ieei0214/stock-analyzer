@@ -362,6 +362,87 @@
                 throw error;
             }
         }
+
+        // Background task notification system (cross-page)
+        // This allows notifications to appear even when user navigates to different pages
+        const BACKGROUND_TASK_KEY = 'backgroundTaskId';
+        const BACKGROUND_TASK_TICKERS_KEY = 'backgroundTaskTickers';
+
+        function setBackgroundTask(taskId, tickers) {
+            localStorage.setItem(BACKGROUND_TASK_KEY, taskId);
+            localStorage.setItem(BACKGROUND_TASK_TICKERS_KEY, JSON.stringify(tickers));
+        }
+
+        function clearBackgroundTask() {
+            localStorage.removeItem(BACKGROUND_TASK_KEY);
+            localStorage.removeItem(BACKGROUND_TASK_TICKERS_KEY);
+        }
+
+        function getBackgroundTask() {
+            const taskId = localStorage.getItem(BACKGROUND_TASK_KEY);
+            const tickers = localStorage.getItem(BACKGROUND_TASK_TICKERS_KEY);
+            return taskId ? { taskId, tickers: tickers ? JSON.parse(tickers) : [] } : null;
+        }
+
+        // Poll for background task completion on all pages
+        let bgTaskPollInterval = null;
+
+        async function pollBackgroundTask() {
+            const task = getBackgroundTask();
+            if (!task) return;
+
+            try {
+                const status = await api(`/api/tasks/${task.taskId}/status`);
+
+                if (status.status === 'completed') {
+                    clearBackgroundTask();
+                    if (bgTaskPollInterval) {
+                        clearInterval(bgTaskPollInterval);
+                        bgTaskPollInterval = null;
+                    }
+                    showToast('Background analysis completed! All stocks analyzed successfully.', 'success');
+                    // If on dashboard, refresh the watchlist
+                    if (typeof loadWatchlist === 'function') {
+                        loadWatchlist();
+                    }
+                } else if (status.status === 'failed') {
+                    clearBackgroundTask();
+                    if (bgTaskPollInterval) {
+                        clearInterval(bgTaskPollInterval);
+                        bgTaskPollInterval = null;
+                    }
+                    showToast('Background analysis failed: ' + (status.message || 'Unknown error'), 'error');
+                } else if (status.status === 'cancelled') {
+                    clearBackgroundTask();
+                    if (bgTaskPollInterval) {
+                        clearInterval(bgTaskPollInterval);
+                        bgTaskPollInterval = null;
+                    }
+                    showToast('Background analysis was cancelled', 'warning');
+                }
+            } catch (err) {
+                // Task may have been cleaned up, clear it
+                clearBackgroundTask();
+                if (bgTaskPollInterval) {
+                    clearInterval(bgTaskPollInterval);
+                    bgTaskPollInterval = null;
+                }
+            }
+        }
+
+        // Start polling for background tasks on page load
+        function startBackgroundTaskPolling() {
+            const task = getBackgroundTask();
+            if (task && !bgTaskPollInterval) {
+                // Poll every 2 seconds for background task completion
+                bgTaskPollInterval = setInterval(pollBackgroundTask, 2000);
+                // Also poll immediately
+                pollBackgroundTask();
+            }
+        }
+
+        // Initialize background task polling on page load
+        document.addEventListener('DOMContentLoaded', startBackgroundTaskPolling);
     </script>
 
     {% block scripts %}{% endblock %}
