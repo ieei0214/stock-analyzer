@@ -1420,7 +1420,7 @@
       "Step 4: Verify UI updates with task progress",
       "Step 5: Verify polling stops when complete"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1879,7 +1879,7 @@
       "Step 4: If analyses can be deleted, delete GOOGL analysis",
       "Step 5: Verify GOOGL removed from dropdown (if no other GOOGL analyses)"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2370,7 +2370,7 @@
       "Step 3: Verify progress updates as each stock completes",
       "Step 4: Verify '3 of 5 complete' type messaging"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2434,7 +2434,7 @@
       "Step 4: Verify main content properly sized",
       "Step 5: Verify no horizontal scroll"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -2446,7 +2446,7 @@
       "Step 4: Verify content is readable",
       "Step 5: Verify navigation accessible"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -2458,7 +2458,7 @@
       "Step 4: Verify content is readable",
       "Step 5: Verify navigation works (hamburger menu)"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -2469,7 +2469,7 @@
       "Step 3: Check 768px viewport - no horizontal scroll",
       "Step 4: Check 375px viewport - no horizontal scroll"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -2479,7 +2479,7 @@
       "Step 2: Measure button sizes",
       "Step 3: Verify minimum 44px x 44px touch targets"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -2522,7 +2522,7 @@
       "Step 3: Click hamburger to open menu",
       "Step 4: Verify menu items accessible"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -2734,7 +2734,7 @@
       "Step 3: Verify one succeeds, one shows duplicate error",
       "Step 4: Verify only one entry in database"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2788,7 +2788,7 @@
       "Step 3: Save both simultaneously",
       "Step 4: Verify no corruption (last save wins)"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2904,7 +2904,7 @@
       "Step 2: Apply filter",
       "Step 3: Verify results appear in under 1 second"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2925,7 +2925,7 @@
       "Step 3: Verify responses aren't excessively large",
       "Step 4: Verify pagination reduces payload size"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
