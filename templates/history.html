@@ -194,12 +194,12 @@
     function renderTable(data) {
         const body = document.getElementById('history-body');
         body.innerHTML = data.map(item => `
-            <tr class="hover:bg-gray-50 transition-colors">
+            <tr class="hover:bg-gray-50 transition-colors cursor-pointer" onclick="viewAnalysis('${item.ticker}', ${item.id})">
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                     ${new Date(item.analysis_date).toLocaleDateString()}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                    <a href="/analysis/${item.ticker}" class="font-mono font-bold text-primary hover:underline">${item.ticker}</a>
+                    <span class="font-mono font-bold text-primary">${item.ticker}</span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                     ${getRecommendationBadge(item.recommendation)}
@@ -217,7 +217,7 @@
                     ${item.gain_loss_percent !== null ? (item.gain_loss_percent >= 0 ? '+' : '') + item.gain_loss_percent.toFixed(2) + '%' : '-'}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <button onclick="checkPerformance(${item.id})" class="text-primary hover:text-blue-700" title="Check Performance">
+                    <button onclick="event.stopPropagation(); checkPerformance(${item.id})" class="text-primary hover:text-blue-700" title="Check Performance">
                         <svg class="w-5 h-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
                         </svg>
@@ -285,6 +285,11 @@
         } catch (err) {
             showToast(err.message, 'error');
         }
+    }
+
+    function viewAnalysis(ticker, analysisId) {
+        // Navigate to analysis detail page
+        window.location.href = `/analysis/${ticker}`;
     }
 
     // Event listeners

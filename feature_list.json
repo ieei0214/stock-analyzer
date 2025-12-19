@@ -316,7 +316,7 @@
       "Step 4: Verify stock detail/analysis page opens",
       "Step 5: Verify correct stock data is displayed"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -327,7 +327,7 @@
       "Step 3: Verify analysis is triggered for 'MSFT' (not 'AAPL')",
       "Step 4: Verify loading state shows for MSFT row"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -430,7 +430,7 @@
       "Step 3: Verify correct markdown report opens/downloads",
       "Step 4: Verify report contains AAPL data"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -443,7 +443,7 @@
       "Step 5: Navigate to dashboard",
       "Step 6: Verify 'NVDA' appears in watchlist"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -454,7 +454,7 @@
       "Step 3: Verify performance data is displayed",
       "Step 4: Verify correct analysis is being checked"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -466,7 +466,7 @@
       "Step 4: Verify analysis detail view opens",
       "Step 5: Verify correct analysis data is shown"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -479,7 +479,7 @@
       "Step 5: Click 'Previous' or page 1 link",
       "Step 6: Verify page 1 content loads"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -491,7 +491,7 @@
       "Step 4: Verify filter is still applied",
       "Step 5: Verify filtered results on page 2"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -883,7 +883,7 @@
       "Step 5: Verify stock appears in watchlist table",
       "Step 6: Verify success notification appears"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -896,7 +896,7 @@
       "Step 5: Verify stock is removed from table",
       "Step 6: Verify success notification appears"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1006,7 +1006,7 @@
       "Step 5: Clear date filter",
       "Step 6: Verify all analyses are shown again"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1019,7 +1019,7 @@
       "Step 5: Select 'All' from ticker filter",
       "Step 6: Verify all analyses are shown"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1032,7 +1032,7 @@
       "Step 5: Click again to reverse sort",
       "Step 6: Verify reverse order"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1109,7 +1109,7 @@
       "Step 3: Verify stock detail page opens",
       "Step 4: Verify all stock data is displayed"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1350,7 +1350,7 @@
       "Step 5: Click sort descending",
       "Step 6: Verify newest first"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
