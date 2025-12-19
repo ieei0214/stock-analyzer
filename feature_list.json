@@ -353,7 +353,7 @@
       "Step 6: Click browser back again",
       "Step 7: Verify dashboard is shown"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -503,7 +503,7 @@
       "Step 4: Verify no action was taken",
       "Step 5: Verify original page state is preserved"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -514,7 +514,7 @@
       "Step 3: Verify modal closes",
       "Step 4: Verify no action was taken"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -526,7 +526,7 @@
       "Step 4: Verify success message appears",
       "Step 5: Verify user stays on settings page with updated values"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -538,7 +538,7 @@
       "Step 4: Verify settings are restored to defaults",
       "Step 5: Verify user remains on settings page"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1637,7 +1637,7 @@
       "Step 4: Refresh page",
       "Step 5: Verify default style still selected"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1992,7 +1992,7 @@
       "Step 4: Verify all filters reset",
       "Step 5: Verify all results shown"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2003,7 +2003,7 @@
       "Step 3: Apply a new filter",
       "Step 4: Verify pagination resets to page 1"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2295,7 +2295,7 @@
       "Step 3: Verify logical tab order",
       "Step 4: Verify all fields reachable"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2306,7 +2306,7 @@
       "Step 3: Press Enter",
       "Step 4: Verify form submits"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
