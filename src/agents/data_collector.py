@@ -332,15 +332,65 @@ class DataCollectorAgent:
 
             news_list = []
             for item in news[:limit]:
+                # Handle different yfinance versions
+                if not isinstance(item, dict):
+                    continue
+
+                # Safely get content dict
+                content = item.get("content") if isinstance(item.get("content"), dict) else {}
+
+                # Try to get title from various possible locations
+                title = item.get("title", "")
+                if not title and content:
+                    title = content.get("title", "")
+
+                # Publisher
+                publisher = item.get("publisher", "")
+                if not publisher and content:
+                    provider = content.get("provider")
+                    if isinstance(provider, dict):
+                        publisher = provider.get("displayName", "")
+
+                # Link
+                link = item.get("link", "") or item.get("url", "")
+                if not link and content:
+                    click_through = content.get("clickThroughUrl")
+                    if isinstance(click_through, dict):
+                        link = click_through.get("url", "")
+
+                # Timestamp
+                pub_time = item.get("providerPublishTime")
+                if not pub_time and content:
+                    pub_time = content.get("pubDate")
+
+                published_at = None
+                if pub_time:
+                    try:
+                        if isinstance(pub_time, (int, float)):
+                            published_at = datetime.fromtimestamp(pub_time).isoformat()
+                        elif isinstance(pub_time, str):
+                            published_at = pub_time
+                    except Exception:
+                        pass
+
+                # Thumbnail
+                thumbnail = None
+                thumb_data = item.get("thumbnail")
+                if not thumb_data and content:
+                    thumb_data = content.get("thumbnail")
+
+                if isinstance(thumb_data, dict):
+                    resolutions = thumb_data.get("resolutions", [])
+                    if resolutions and len(resolutions) > 0:
+                        thumbnail = resolutions[0].get("url")
+
                 news_list.append({
-                    "title": item.get("title", ""),
-                    "publisher": item.get("publisher", ""),
-                    "link": item.get("link", ""),
-                    "published_at": datetime.fromtimestamp(
-                        item.get("providerPublishTime", 0)
-                    ).isoformat() if item.get("providerPublishTime") else None,
+                    "title": title or "",
+                    "publisher": publisher or "",
+                    "link": link or "",
+                    "published_at": published_at,
                     "type": item.get("type", ""),
-                    "thumbnail": item.get("thumbnail", {}).get("resolutions", [{}])[0].get("url") if item.get("thumbnail") else None,
+                    "thumbnail": thumbnail,
                 })
 
             return news_list

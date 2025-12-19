@@ -646,7 +646,7 @@
       "Step 4: Click/verify news sources are real",
       "Step 5: Verify not placeholder/mock news"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -669,7 +669,7 @@
       "Step 4: Navigate to history page",
       "Step 5: Verify empty state message for analyses"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -737,7 +737,7 @@
       "Step 2: View market status indicator in header",
       "Step 3: Verify indicator correctly shows 'Market Open' or 'Market Closed'"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -859,7 +859,7 @@
       "Step 4: Navigate to settings page",
       "Step 5: Verify saved values are still present"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",

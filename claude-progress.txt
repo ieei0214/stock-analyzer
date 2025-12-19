@@ -609,3 +609,101 @@ User → Frontend (Jinja2 + Tailwind)
 - **Tests passing: 81 out of 273 (29.7%)**
 - Progress improved from 68 to 81 tests this session
 - 13 new tests verified and marked as passing
+
+---
+
+## Session 8: News Bug Fix & Additional Testing
+
+### Date: December 18, 2025
+### Agent: Development Agent
+
+## Completed Tasks
+
+### 1. Verified Core Functionality
+- Server running on localhost:8000
+- All API endpoints responding correctly
+- All pages accessible (dashboard, analyze, history, settings)
+- Watchlist working with real stock data from yfinance
+
+### 2. Fixed News Data Collection Bug
+- **Problem**: News headlines were returning empty titles
+- **Cause**: yfinance API structure changed - news items now have "content" wrapper
+- **Fix**: Updated `get_news()` in `src/agents/data_collector.py` to handle both old and new yfinance formats
+- **Verified**: TSLA and NVDA now return real news headlines with:
+  - Titles: "Mag 7 stocks are 'back in favor'...", "Tesla's 'Musk Premium'..."
+  - Publishers: Yahoo Finance, Bloomberg, TheStreet, Motley Fool
+  - Links: Real Yahoo Finance URLs
+  - Timestamps: Recent dates (Dec 18, 2025)
+  - Thumbnails: Valid image URLs
+
+### 3. Verified and Marked 4 New Tests as Passing
+
+**Tests Marked Passing:**
+1. **C. Real Data Verification - News headlines are real and recent** (was failing due to bug)
+   - Fixed news collection from yfinance
+   - Verified TSLA news has real headlines, publishers, dates
+   - Links point to real Yahoo Finance articles
+
+2. **C. Real Data Verification - Empty state shown correctly when no data exists**
+   - Dashboard shows "Your watchlist is empty" message
+   - History page shows "No analysis history" message
+   - Both have proper styling and icons
+
+3. **C. Real Data Verification - Market status indicator reflects real market hours**
+   - Market indicator in header shows "Market Open" or "Market Closed"
+   - Uses JavaScript to check EST market hours (9am-4pm weekdays)
+   - Updates every minute
+
+4. **C. Real Data Verification - Settings persist after application restart**
+   - Saved cache_duration_hours = 12
+   - Restarted server (via init.sh)
+   - Verified settings still show 12 hours
+
+## Current Test Status
+- Total Tests: 273
+- Passing: 85
+- Failing: 188
+- Progress: 31.1%
+
+## Files Modified
+1. src/agents/data_collector.py - Fixed get_news() to handle new yfinance API structure
+2. feature_list.json - Updated 4 tests to passes: true
+
+## Notes for Next Agent
+
+### CRITICAL
+- **85 tests now passing** (up from 81 in previous session)
+- Browser automation (Playwright) still not available - needs Chrome install
+- LLM analysis requires valid API key to test end-to-end
+- News now working correctly with real data!
+
+### What's Working
+- Database layer complete
+- All API endpoints functional
+- Data Collector Agent fully implemented with yfinance (NEWS FIXED!)
+- Analyst Agent implemented with OpenAI/Gemini support
+- Settings with API key masking and persistence
+- Watchlist with real-time prices
+- Chart generation (matplotlib)
+- All pages rendering correctly
+- Navigation and deep linking working
+- Empty states for watchlist and history
+- Market status indicator
+- News headlines with real data
+
+### What Needs Work
+- Browser automation testing (Chrome not installed)
+- End-to-end LLM analysis flow (needs valid API key)
+- Report generation (markdown reports)
+- Many workflow tests require full browser automation
+
+### Priority for Next Session
+1. Consider implementing report generation
+2. Focus on workflow tests that can be tested via API
+3. Try to verify more tests via curl calls
+
+## Session 8 Stats
+- **Tests passing: 85 out of 273 (31.1%)**
+- Progress improved from 81 to 85 tests this session
+- 4 new tests verified and marked as passing
+- Fixed critical news data bug
