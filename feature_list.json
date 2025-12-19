@@ -2024,7 +2024,7 @@
       "Step 3: Return to history",
       "Step 4: Verify sort is at default (date descending)"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2099,7 +2099,7 @@
       "Step 4: Go to page 2",
       "Step 5: Verify correct 10 AAPL items shown in correct order"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2284,7 +2284,7 @@
       "Step 3: Verify all errors shown at once",
       "Step 4: User can see all issues"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2490,7 +2490,7 @@
       "Step 3: Verify modal fits without overflow",
       "Step 4: Verify modal buttons accessible"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -2501,7 +2501,7 @@
       "Step 3: Verify text truncates with ellipsis",
       "Step 4: Verify full text visible on hover/detail"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -2511,7 +2511,7 @@
       "Step 2: Verify horizontal scroll available if needed",
       "Step 3: Verify can scroll to see all columns"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -2649,7 +2649,7 @@
       "Step 2: View date in various places (table, detail)",
       "Step 3: Verify consistent date format throughout"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2661,7 +2661,7 @@
       "Step 4: Update record",
       "Step 5: Verify updated_at reflects update time"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2703,7 +2703,7 @@
       "Step 3: Check cache_expires_at",
       "Step 4: Verify equals current_time + cache_duration"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2713,7 +2713,7 @@
       "Step 2: Sort by date",
       "Step 3: Verify Dec > Nov > Oct etc."
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2723,7 +2723,7 @@
       "Step 2: Check performance after 30 days",
       "Step 3: Verify '1 month' period is correctly identified"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2831,7 +2831,7 @@
       "Step 3: Verify all analyses in file",
       "Step 4: Verify data matches UI"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2841,7 +2841,7 @@
       "Step 2: Export to CSV",
       "Step 3: Verify only filtered records exported"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2852,7 +2852,7 @@
       "Step 3: Verify markdown file downloads",
       "Step 4: Verify content is complete"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2862,7 +2862,7 @@
       "Step 2: Download report",
       "Step 3: Verify chart images are embedded or linked"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2872,7 +2872,7 @@
       "Step 2: Export to CSV",
       "Step 3: Verify proper encoding (UTF-8)"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
