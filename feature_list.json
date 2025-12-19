@@ -2671,7 +2671,7 @@
       "Step 2: Verify cannot select invalid dates",
       "Step 3: Verify sensible defaults"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
