@@ -2533,7 +2533,7 @@
       "Step 3: View on mobile",
       "Step 4: Verify charts resize and remain readable"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -2744,7 +2744,7 @@
       "Step 2: Verify each page shows its correct data",
       "Step 3: Verify no data from previous page bleeding through"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2755,7 +2755,7 @@
       "Step 3: Verify no crash when response arrives",
       "Step 4: Verify no unexpected behavior"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2766,7 +2766,7 @@
       "Step 3: Verify both complete correctly",
       "Step 4: Verify data not mixed up"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2777,7 +2777,7 @@
       "Step 3: Try to interact in Tab 1",
       "Step 4: Verify graceful error handling"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2809,7 +2809,7 @@
       "Step 3: Verify no corruption",
       "Step 4: Verify fresh data stored correctly"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
