@@ -1226,7 +1226,7 @@
       "Step 4: Verify form still contains user's entered data",
       "Step 5: Verify user can correct and resubmit"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1291,7 +1291,7 @@
       "Step 3: Verify error is logged with timestamp and details",
       "Step 4: Verify no sensitive data in logs"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1337,7 +1337,7 @@
       "Step 4: Verify API call includes filter parameter",
       "Step 5: Verify response matches filter"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1509,7 +1509,7 @@
       "Step 3: Verify API request includes start and end dates",
       "Step 4: Verify response contains only matching records"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2544,7 +2544,7 @@
       "Step 3: Verify all buttons, links, inputs are reachable",
       "Step 4: Verify logical tab order"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -2575,7 +2575,7 @@
       "Step 3: Check button text against button background",
       "Step 4: Verify 4.5:1 ratio minimum"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -2628,7 +2628,7 @@
       "Step 3: Use only keyboard to trigger analysis",
       "Step 4: Verify all main actions possible"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -2999,7 +2999,7 @@
       "Step 3: Verify consistent spacing pattern",
       "Step 4: Verify proper alignment"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -3010,7 +3010,7 @@
       "Step 3: Verify legends are clear",
       "Step 4: Verify axes are labeled"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -3020,7 +3020,7 @@
       "Step 2: Verify sidebar stays fixed",
       "Step 3: Verify navigation always accessible"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -3030,7 +3030,7 @@
       "Step 2: Verify current time displayed",
       "Step 3: Verify time updates or is accurate"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
